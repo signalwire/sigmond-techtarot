@@ -184,6 +184,17 @@ async function connectToCall() {
             if (deckPlaceholder) {
                 deckPlaceholder.style.display = 'none';
             }
+            
+            // Show local video preview
+            const localVideoContainer = document.getElementById('local-video-container');
+            const localVideo = document.getElementById('local-video');
+            if (localVideoContainer && localVideo && roomSession.localStream) {
+                // Clone the stream to avoid affecting the main stream
+                const localStreamClone = roomSession.localStream.clone();
+                localVideo.srcObject = localStreamClone;
+                localVideoContainer.style.display = 'block';
+                logEvent('Local video preview started');
+            }
         });
 
         roomSession.on('member.joined', (params) => {
@@ -286,6 +297,20 @@ function handleDisconnect() {
     // Clean up stream check interval
     if (roomSession && roomSession._streamCheckInterval) {
         clearInterval(roomSession._streamCheckInterval);
+    }
+    
+    // Clean up local video preview
+    const localVideoContainer = document.getElementById('local-video-container');
+    const localVideo = document.getElementById('local-video');
+    if (localVideo && localVideo.srcObject) {
+        // Stop all tracks in the cloned stream
+        const tracks = localVideo.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+        localVideo.srcObject = null;
+        logEvent('Local video preview stopped');
+    }
+    if (localVideoContainer) {
+        localVideoContainer.style.display = 'none';
     }
     
     // Clean up client

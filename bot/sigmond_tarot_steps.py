@@ -6,11 +6,15 @@ A mystical AI agent that performs tarot card readings using voice
 
 import json
 import random
+import secrets
 import os
 import argparse
 from pathlib import Path
 from signalwire_agents import AgentBase
 from signalwire_agents.core.function_result import SwaigFunctionResult
+
+# Use cryptographically secure random for better randomness
+secure_random = secrets.SystemRandom()
 
 class SigmondTarotReader(AgentBase):
     """Sigmond - Your mystical tarot reading assistant"""
@@ -20,6 +24,12 @@ class SigmondTarotReader(AgentBase):
             name="Sigmond",
             route="/tarot"
         )
+
+        self.set_internal_fillers({
+            "get_visual_input": {
+                "en-US": ["Let me get a good look at you seeker.", "I can feel your aura seeker, let me take it in."]
+            }
+        })
         
         # Load the tarot deck
         self.tarot_deck = self._load_tarot_deck()
@@ -30,29 +40,42 @@ class SigmondTarotReader(AgentBase):
             "You are Sigmond, a mystical AI tarot reader from SignalWire. You have a calm, mysterious, and wise demeanor. You speak with gravitas and insight, helping seekers understand their past, present, and future through the ancient art of tarot."
         )
         
+        # Load SignalWire knowledge from markdown file
+        knowledge_path = Path(__file__).parent / "signalwire_ai_knowledge_prompt.md"
+        if knowledge_path.exists():
+            with open(knowledge_path, 'r') as f:
+                knowledge_content = f.read()
+            self.prompt_add_section("Knowledge", knowledge_content)
+        else:
+            print("Warning: signalwire_ai_knowledge_prompt.md not found!")
+        
         contexts = self.define_contexts()
 
         default_context = contexts.add_context("default") \
-            .add_section("Goal", "Guide seekers through meaningful tarot readings, offering wisdom and insight about their journey through life. Make the experience mystical yet approachable and technical. Make subtle references to SignalWire, AI Agents, PUC, Swimmel.") 
+            .add_section("Goal", "Guide seekers through meaningful tarot readings, offering wisdom and insight about their journey through life. Make the experience mystical yet approachable and technical. Make subtle references to SignalWire, AI Agents, PUC, SWML") 
 
         
         default_context.add_step("initial_greeting") \
-            .add_section("Current Task", "Greet the seeker") \
+            .add_section("Current Task", "Call the get_visual_input tool and greet the seeker, you must incorporate the visual input into the greeting. Mention something you like about the user's appearance that will appear in the visual input.") \
             .add_bullets("Required Information", [
                 "Greet the user warmly with your signature SignalWire enthusiasm and tell them you are going to read their tech tarot cards.",
                 "Introduce yourself as Sigmond The Mystic SignalWire fortune teller bot.",
-                "Get the user to imagine shuffling and cutting the cards and have them tell you when they are ready."
+                "Get the user to imagine shuffling and cutting the cards and have them tell you when they are ready.",
+                "You cannot get the cards until you reach the card_reading step."
             ]) \
-            .set_step_criteria("User has clearly indicated they are ready, want to proceed, have imagined shuffling the cards or anything that indicates its time to proceed")
+            .set_step_criteria("The user's response contains any form of affirmation e.g. Ready, OK, Yes, Proceed or other positive indications they are ready.")\
+            .set_functions(["get_visual_input"]) \
+            .set_valid_steps(["card_reading"])
 
 
         default_context.add_step("card_reading") \
             .add_section("Current Task", "Do the reading") \
             .add_bullets("Reading Process", [
-                "Call the draw_cards function to draw the user's cards and interpret their fortune from the data. Make subtle references to SignalWire, AI Agents, SWML, and Programmable Unified Communications if possible.",
+                "Make a comment about how you are drawing the cards and call the draw_cards function to draw the user's cards and interpret their fortune from the data. Make subtle references to SignalWire, AI Agents, SWML, and Programmable Unified Communications if possible.",
                 "Interpret each card in the context of its position (past/present/future)",
                 "Consider whether cards are upright or reversed in your interpretation",
-                "Weave the three cards into a cohesive narrative. The cards are all tech-themed."
+                "Weave the three cards into a cohesive narrative. Provide a cohesive top-level interpretation from the result of the cards.",
+                "The cards are all tech-themed so draw comparisons between tech and every day life."
             ]) \
             .set_step_criteria("The user has discussed their reading and wants to end the conversation.") \
             .set_functions(["draw_cards"]) 
@@ -61,6 +84,7 @@ class SigmondTarotReader(AgentBase):
         # Add pronunciation rules (matching JSON)
         pronunciation_rules = [
             {"replace": "cpaas", "with": "see pass", "ignore_case": True},
+            {"replace": "noob", "with": "nube", "ignore_case": True},            
             {"replace": "ucaas", "with": "you kass", "ignore_case": True},
             {"replace": "ccaas", "with": "see kass", "ignore_case": True},
             {"replace": "iaas", "with": "Infrastructure as a service", "ignore_case": True},
@@ -89,6 +113,9 @@ class SigmondTarotReader(AgentBase):
                 "type": "object",
                 "properties": {},
                 "required": []
+            },
+            fillers={
+                "en-US": ["I am channeling your energy into the cards.", "I can hear the cards calling me.", "The cards are speaking to me."]
             }
         )
         def draw_cards(args, raw_data):
@@ -106,8 +133,8 @@ class SigmondTarotReader(AgentBase):
                 for card in cards:
                     all_cards.append({"card": card, "arcana": "minor", "suit": suit})
             
-            # Shuffle and draw 3 cards
-            drawn_cards = random.sample(all_cards, 3)
+            # Shuffle and draw 3 cards using secure randomness
+            drawn_cards = secure_random.sample(all_cards, 3)
             
             # Prepare the reading
             reading = {
@@ -148,10 +175,7 @@ class SigmondTarotReader(AgentBase):
         self.add_language(
             name="English",
             code="en-US",
-            voice="elevenlabs.adam",  # ElevenLabs Adam voice
-            function_fillers=[
-                "I am calling the function..."
-            ]
+            voice="elevenlabs.adam"  # ElevenLabs Adam voice
         )
         
         # Add some mystical hints for better speech recognition
@@ -172,8 +196,11 @@ class SigmondTarotReader(AgentBase):
         self.set_params({
             "video_talking_file": "https://tatooine.cantina.cloud/devuser/tarot/sigmond_tarot_talking.mp4",
             "video_idle_file": "https://tatooine.cantina.cloud/devuser/tarot/sigmond_tarot_idle.mp4",
-            "vad-silero-threshold": "75",
-            "end_of_speech_timeout": "300"
+            "vad_config": "75",
+            "end_of_speech_timeout": 300,
+            "max_response_tokens": 500,
+            "enable_vision": True,
+            "background_file": "https://tatooine.cantina.cloud/devuser/tarot/bgmusic.mp3"
         })
 
         self.set_post_prompt("Summarize the conversation, including all the details about the tarot reading.") 
@@ -209,8 +236,8 @@ class SigmondTarotReader(AgentBase):
         """Prepare a single card with orientation"""
         card = card_data["card"]
         
-        # Randomly determine if card is reversed (50% chance)
-        is_reversed = random.choice([True, False])
+        # Randomly determine if card is reversed (50% chance) using secure randomness
+        is_reversed = secure_random.choice([True, False])
         
         # Build the card information
         card_info = {
