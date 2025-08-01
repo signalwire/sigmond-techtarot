@@ -1,0 +1,716 @@
+{
+  "major_arcana": [
+    {
+      "name": "The N00b (The Fool)",
+      "description": {
+        "upright": "Fresh ideas, untapped potential, the excitement of starting a new project.",
+        "reversed": "Missed details, overlooked elements, the chaos of an uninitialized variable.",
+        "yes_or_no": "Yes, it's a good time to embrace the unknown and start fresh."
+      },
+      "image": "card_images/Major/the_noob.jpg"
+    },
+    {
+      "name": "Caffeine Overflow (The Magician)",
+      "description": {
+        "upright": "Energy, creativity, the power of caffeination.",
+        "reversed": "Burnout, overwork, the crash after too much caffeine.",
+        "yes_or_no": "Yes, but don't overdo it; balance is key."
+      },
+      "image": "card_images/Major/caffine_overflow.jpg"
+    },
+    {
+      "name": "The Infinite Loop (The High Priestess)",
+      "description": {
+        "upright": "Wisdom, insight, understanding the complexities of the code.",
+        "reversed": "Confusion, endless cycles, getting caught in an infinite loop.",
+        "yes_or_no": "Maybe, you might need to step back and reassess."
+      },
+      "image": "card_images/Major/the_infinite_loop.jpg"
+    },
+    {
+      "name": "The Compiler Oracle (The Empress)",
+      "description": {
+        "upright": "Clear understanding, foresight, predicting coding outcomes.",
+        "reversed": "Confusion, misunderstanding, unexpected errors or bugs.",
+        "yes_or_no": "Yes, if you've thoroughly reviewed and understood the situation."
+      },
+      "image": "card_images/Major/the_compiler_oracle.jpg"
+    },
+    {
+      "name": "Lord of Legacy Code (The Emperor)",
+      "description": {
+        "upright": "Power, control, understanding, and working with legacy code.",
+        "reversed": "Dictatorship, inflexibility, being hamstrung by legacy code.",
+        "yes_or_no": "Yes, but be wary of the restrictions in place."
+      },
+      "image": "card_images/Major/lord_of_legacy_code.jpg"
+    },
+    {
+      "name": "The Duck Debugger (The Hierophant)",
+      "description": {
+        "upright": "Mentorship, understanding, and successful debugging with your trusty duck.",
+        "reversed": "Miscommunication, misunderstanding, your duck isn't helping you debug.",
+        "yes_or_no": "Yes, but you may need to seek advice."
+      },
+      "image": "card_images/Major/the_duck_debugger.jpg"
+    },
+    {
+      "name": "Merge Conflict (The Lovers)",
+      "description": {
+        "upright": "Integration, union, successful code merging.",
+        "reversed": "Disagreements, disunion, the dreaded merge conflict.",
+        "yes_or_no": "Maybe, you'll have to resolve conflicts first."
+      },
+      "image": "card_images/Major/merge_conflict.jpg"
+    },
+    {
+      "name": "The Market Conqueror (The Chariot)",
+      "description": {
+        "upright": "Successful product marketing, confident direction, control over market trends, triumph over the competition.",
+        "reversed": "Failed product marketing, lack of direction, loss of control over market trends, losing to competition.",
+        "yes_or_no": "Yes, this card is a strong signal of triumph and advancement, so the answer would be \"Yes\" in terms of achieving marketing goals or overcoming challenges."
+      },
+      "image": "card_images/Major/the_market_conqueror.jpg"
+    },
+    {
+      "name": "The Lone Wolf Programmer (The Hermit)",
+      "description": {
+        "upright": "Self-reliance, autonomy, deep focus, single-handed coding mastery.",
+        "reversed": "Isolation, neglect of teamwork, inability to delegate or collaborate.",
+        "yes_or_no": "Yes, if solitude and deep focus are necessary, but be aware of the potential need for collaboration and teamwork."
+      },
+      "image": "card_images/Major/the_lone_wolf.jpg"
+    },
+    {
+      "name": "The Spinning Wheel of Death (Wheel of Fortune)",
+      "description": {
+        "upright": "Change, cycles, the ebb and flow of development.",
+        "reversed": "Bad luck, negative cycles, seeing the spinning wheel of death.",
+        "yes_or_no": "Yes, but be ready for sudden changes and occasional setbacks."
+      },
+      "image": "card_images/Major/spinning_wheel_of_death.jpg"
+    },
+    {
+      "name": "Order of Operations (Justice)",
+      "description": {
+        "upright": "Effective prioritization, operational efficiency, fairness in resource distribution, strategic decision-making, accountability.",
+        "reversed": "Poor prioritization, inefficiency, unfairness in resource allocation, poor strategic decisions, lack of accountability.",
+        "yes_or_no": "This card signifies balance and fairness - if the question pertains to these qualities, the answer would be \"Yes\"."
+      },
+      "image": "card_images/Major/order_of_operations.jpg"
+    },
+    {
+      "name": "The Debugger (Strength)",
+      "description": {
+        "upright": "Courage, resilience, handling unexpected bugs.",
+        "reversed": "Weakness, lack of preparation, uncaught exceptions disrupting your flow.",
+        "yes_or_no": "Yes, but only if you are ready to face challenges."
+      },
+      "image": "card_images/Major/the_debugger.jpg"
+    },
+    {
+      "name": "Thread Deadlock (The Hanged Man)",
+      "description": {
+        "upright": "Patience, pause, waiting for processes to complete.",
+        "reversed": "Impatience, delay, getting stuck in a thread deadlock.",
+        "yes_or_no": "Maybe, you may need to wait or make a sacrifice."
+      },
+      "image": "card_images/Major/thread_deadlock.jpg"
+    },
+    {
+      "name": "Segmentation Fault (Death)",
+      "description": {
+        "upright": "Transformation, endings, the painful yet necessary process of dealing with a segfault.",
+        "reversed": "Fear of change, denial, unwillingness to address the segfault.",
+        "yes_or_no": "Yes, it's time for a significant change or transformation."
+      },
+      "image": "card_images/Major/segmentation_fault.jpg"
+    },
+    {
+      "name": "The Negotiator (Temperance)",
+      "description": {
+        "upright": "Balance, patience, the art of managing complex sales deals, blending different stakeholder needs into a harmonious agreement.",
+        "reversed": "Imbalance, impatience, rushing deals, creating discord among stakeholders by prioritizing one over the others.",
+        "yes_or_no": "Yes, if you can maintain balance and patience in your sales approach."
+      },
+      "image": "card_images/Major/the_negotiator.jpg"
+    },
+    {
+      "name": "Feature Creep (The Devil)",
+      "description": {
+        "upright": "Unchecked expansion of scope, the allure of constant additions, being trapped in an endless cycle of revisions, bloated software",
+        "reversed": "Prioritizing project scope, rejecting unnecessary additions, breaking free from endless revisions, lean software development",
+        "yes_or_no": "This card warns against over-expansion, suggesting \"No\" when it comes to adding non-essential features."
+      },
+      "image": "card_images/Major/feature_creep.jpg"
+    },
+    {
+      "name": "The Tower of Tech Debt (The Tower)",
+      "description": {
+        "upright": "Mounting challenges, growing technical debt, delaying essential refactoring.",
+        "reversed": "Paying down, addressing issues, taking the necessary steps to refactor and resolve technical debt.",
+        "yes_or_no": "No, it may be a time of difficulty and hard work, but ultimately necessary for future progress."
+      },
+      "image": "card_images/Major/the_tower_of_tech_debt.jpg"
+    },
+    {
+      "name": "The Rock Star Coder (The Star)",
+      "description": {
+        "upright": "Hope, inspiration, cranking out code like nobody else.",
+        "reversed": "Despair, lack of faith, feeling unrecognized or undervalued.",
+        "yes_or_no": "Yes, hold onto hope and continue striving for recognition."
+      },
+      "image": "card_images/Major/the_rock_star_coder.jpg"
+    },
+    {
+      "name": "Mysterious Bug (The Moon)",
+      "description": {
+        "upright": "Illusion, uncertainty, dealing with a bug that's hard to pin down.",
+        "reversed": "Clarity, truth, finally tracking down that elusive bug.",
+        "yes_or_no": "Maybe, things may not be as they seem."
+      },
+      "image": "card_images/Major/mysterious_bug.jpg"
+    },
+    {
+      "name": "The Enlightened Algorithm (The Sun)",
+      "description": {
+        "upright": "Success, joy, writing a flawless algorithm.",
+        "reversed": "Failure, unhappiness, dealing with a faulty algorithm.",
+        "yes_or_no": "Yes, you're close to achieving your goal."
+      },
+      "image": "card_images/Major/the_enlightened_algorithm.jpg"
+    },
+    {
+      "name": "Code Review (Judgement)",
+      "description": {
+        "upright": "Evaluation, feedback, receiving constructive critique during a code review.",
+        "reversed": "Denial, lack of introspection, rejecting valuable feedback.",
+        "yes_or_no": "Yes, but consider the consequences of your actions carefully."
+      },
+      "image": "card_images/Major/code_review.jpg"
+    },
+    {
+      "name": "The Global Recruiter (The World)",
+      "description": {
+        "upright": "Success in recruiting top-tier tech talent, completion of a demanding hiring cycle, acquisition of exceptional coding skills, securing a robust network of tech professionals.",
+        "reversed": "Failure in recruiting top-tier tech talent, inability to complete a demanding hiring cycle, struggle in acquiring exceptional coding skills, limited network of tech professionals.",
+        "yes_or_no": "This card is a strong signal of completion and success, so the answer would be \"Yes\" in terms of securing top tech talent and completing recruitment goals."
+      },
+      "image": "card_images/Major/the_global_recruiter.jpg"
+    }
+  ],
+  "minor_arcana": {
+    "Linux": [
+      {
+        "name": "Ace of Linux",
+        "description": {
+          "upright": "New project, beginning of understanding, system initiation.",
+          "reversed": "Failed launch, lack of understanding, system malfunction.",
+          "yes_or_no": "No, there are obstacles to overcome."
+        },
+        "image": "card_images/Linux/ace_of_linux.jpg"
+      },
+      {
+        "name": "Two of Linux",
+        "description": {
+          "upright": "Balance, system stability, successful dual boot.",
+          "reversed": "Imbalance, system instability, unsuccessful installation.",
+          "yes_or_no": "No, there may be instability or imbalance."
+        },
+        "image": "card_images/Linux/2_of_linux.jpg"
+      },
+      {
+        "name": "Three of Linux",
+        "description": {
+          "upright": "Collaboration, successful integration, teamwork in system administration.",
+          "reversed": "Lack of integration, siloed teams, failed system update.",
+          "yes_or_no": "No, there may be difficulties in collaboration."
+        },
+        "image": "card_images/Linux/3_of_linux.jpg"
+      },
+      {
+        "name": "Four of Linux",
+        "description": {
+          "upright": "System security, secure firewall, well-managed permissions.",
+          "reversed": "System vulnerability, firewall breach, mismanaged permissions.",
+          "yes_or_no": "No, there are security concerns."
+        },
+        "image": "card_images/Linux/4_of_linux.jpg"
+      },
+      {
+        "name": "Five of Linux",
+        "description": {
+          "upright": "Healthy competition, open-source contribution, software evolution.",
+          "reversed": "Unhealthy rivalry, closed-source mindset, software stagnation.",
+          "yes_or_no": "No, there may be obstacles or stagnation."
+        },
+        "image": "card_images/Linux/5_of_linux.jpg"
+      },
+      {
+        "name": "Six of Linux",
+        "description": {
+          "upright": "Successful update, smooth migration, learning from past codes.",
+          "reversed": "Failed update, migration issues, neglecting past mistakes.",
+          "yes_or_no": "No, there may be difficulties in updates or migrations."
+        },
+        "image": "card_images/Linux/6_of_linux.jpg"
+      },
+      {
+        "name": "Seven of Linux",
+        "description": {
+          "upright": "Exploration, software growth, branching out into new distros.",
+          "reversed": "Stagnation, lack of growth, sticking to outdated systems.",
+          "yes_or_no": "No, there may be stagnation or lack of growth."
+        },
+        "image": "card_images/Linux/7_of_linux.jpg"
+      },
+      {
+        "name": "Eight of Linux",
+        "description": {
+          "upright": "Mastery, skilled command line use, proficiency in shell scripting.",
+          "reversed": "Lack of skill, misuse of commands, script errors.",
+          "yes_or_no": "No, there may be challenges or errors."
+        },
+        "image": "card_images/Linux/8_of_linux.jpg"
+      },
+      {
+        "name": "Nine of Linux",
+        "description": {
+          "upright": "Fulfilled objectives, successful deployments, efficient resource utilization.",
+          "reversed": "Unfulfilled plans, failed deployments, resource wastage.",
+          "yes_or_no": "No, there may be setbacks or inefficiency."
+        },
+        "image": "card_images/Linux/9_of_linux.jpg"
+      },
+      {
+        "name": "Ten of Linux",
+        "description": {
+          "upright": "Completion, stable system, successful automation.",
+          "reversed": "Incomplete tasks, unstable system, automation failures.",
+          "yes_or_no": "No, there may be incomplete tasks or failures."
+        },
+        "image": "card_images/Linux/10_of_linux.jpg"
+      },
+      {
+        "name": "Page of Linux",
+        "description": {
+          "upright": "Curiosity, learning, new user.",
+          "reversed": "Disinterest, stagnation, user frustration.",
+          "yes_or_no": "No, there may be disinterest or frustration."
+        },
+        "image": "card_images/Linux/page_of_linux.jpg"
+      },
+      {
+        "name": "Knight of Linux",
+        "description": {
+          "upright": "Action, bravery, diving into complex system issues.",
+          "reversed": "Hesitation, fear, avoiding complex issues.",
+          "yes_or_no": "No, there may be hesitation or avoidance."
+        },
+        "image": "card_images/Linux/knight_of_linux.jpg"
+      },
+      {
+        "name": "Queen of Linux",
+        "description": {
+          "upright": "Understanding, intuition, mastery of system administration.",
+          "reversed": "Misunderstanding, confusion, system administration issues.",
+          "yes_or_no": "No, there may be misunderstandings or confusion."
+        },
+        "image": "card_images/Linux/queen_of_linux.jpg"
+      },
+      {
+        "name": "King of Linux",
+        "description": {
+          "upright": "Control, authority, command over systems.",
+          "reversed": "Lack of control, chaos, system failure.",
+          "yes_or_no": "No, there may be lack of control or chaos."
+        },
+        "image": "card_images/Linux/king_of_linux.jpg"
+      }
+    ],
+    "Docker": [
+      {
+        "name": "Ace of Docker",
+        "description": {
+          "upright": "New container, beginning of an application, system isolation.",
+          "reversed": "Broken container, application failure, lack of isolation.",
+          "yes_or_no": "No, there may be failures or lack of isolation."
+        },
+        "image": "card_images/Docker/ace_of_docker.jpg"
+      },
+      {
+        "name": "Two of Docker",
+        "description": {
+          "upright": "Balance, successful container orchestration, cooperation between containers.",
+          "reversed": "Imbalance, orchestration failure, container conflict.",
+          "yes_or_no": "No, there may be imbalance or conflicts."
+        },
+        "image": "card_images/Docker/2_of_docker.jpg"
+      },
+      {
+        "name": "Three of Docker",
+        "description": {
+          "upright": "Collaboration, successful integration, teamwork in container deployment.",
+          "reversed": "Misintegration, lack of teamwork, deployment failure.",
+          "yes_or_no": "No, there may be difficulties in collaboration or deployment."
+        },
+        "image": "card_images/Docker/3_of_docker.jpg"
+      },
+      {
+        "name": "Four of Docker",
+        "description": {
+          "upright": "Security, secure container, well-managed images.",
+          "reversed": "Insecurity, vulnerable container, poorly managed images.",
+          "yes_or_no": "No, there may be security concerns."
+        },
+        "image": "card_images/Docker/4_of_docker.jpg"
+      },
+      {
+        "name": "Five of Docker",
+        "description": {
+          "upright": "Healthy competition, open-source contribution, innovation in containerization.",
+          "reversed": "Unhealthy rivalry, closed-source mindset, stagnation in innovation.",
+          "yes_or_no": "No, there may be obstacles or stagnation."
+        },
+        "image": "card_images/Docker/5_of_docker.jpg"
+      },
+      {
+        "name": "Six of Docker",
+        "description": {
+          "upright": "Successful update, smooth image pull, learning from past deployments.",
+          "reversed": "Failed update, image pull issues, neglecting past mistakes.",
+          "yes_or_no": "No, there may be difficulties in updates or mistakes."
+        },
+        "image": "card_images/Docker/6_of_docker.jpg"
+      },
+      {
+        "name": "Seven of Docker",
+        "description": {
+          "upright": "Exploration, container growth, branching out into new images.",
+          "reversed": "Stagnation, lack of growth, sticking to outdated images.",
+          "yes_or_no": "No, there may be stagnation or lack of growth."
+        },
+        "image": "card_images/Docker/7_of_docker.jpg"
+      },
+      {
+        "name": "Eight of Docker",
+        "description": {
+          "upright": "Mastery, skillful orchestration, proficiency in Dockerfile scripting.",
+          "reversed": "Lack of skill, mis-orchestration, Dockerfile errors.",
+          "yes_or_no": "No, there may be challenges or errors."
+        },
+        "image": "card_images/Docker/8_of_docker.jpg"
+      },
+      {
+        "name": "Nine of Docker",
+        "description": {
+          "upright": "Fulfilled objectives, successful deployments, efficient container utilization.",
+          "reversed": "Unfulfilled plans, failed deployments, inefficient container usage.",
+          "yes_or_no": "No, there may be setbacks or inefficiency."
+        },
+        "image": "card_images/Docker/9_of_docker.jpg"
+      },
+      {
+        "name": "Ten of Docker",
+        "description": {
+          "upright": "Completion, stable environment, successful container orchestration.",
+          "reversed": "Incomplete tasks, unstable environment, orchestration failure.",
+          "yes_or_no": "No, there may be incomplete tasks or failures."
+        },
+        "image": "card_images/Docker/10_of_docker.jpg"
+      },
+      {
+        "name": "Page of Docker",
+        "description": {
+          "upright": "Curiosity, learning, new Docker user.",
+          "reversed": "Disinterest, stagnation, user frustration.",
+          "yes_or_no": "No, there may be disinterest or frustration."
+        },
+        "image": "card_images/Docker/page_of_docker.jpg"
+      },
+      {
+        "name": "Knight of Docker",
+        "description": {
+          "upright": "Action, bravery, diving into complex orchestration tasks.",
+          "reversed": "Hesitation, fear, avoiding complex tasks.",
+          "yes_or_no": "No, there may be hesitation or avoidance."
+        },
+        "image": "card_images/Docker/knight_of_docker.jpg"
+      },
+      {
+        "name": "Queen of Docker",
+        "description": {
+          "upright": "Understanding, intuition, mastery of Docker orchestration.",
+          "reversed": "Misunderstanding, confusion, orchestration issues.",
+          "yes_or_no": "No, there may be misunderstandings or confusion."
+        },
+        "image": "card_images/Docker/queen_of_docker.jpg"
+      },
+      {
+        "name": "King of Docker",
+        "description": {
+          "upright": "Control, authority, command over Docker environment.",
+          "reversed": "Lack of control, chaos, environment failure.",
+          "yes_or_no": "No, there may be lack of control or chaos."
+        },
+        "image": "card_images/Docker/king_of_docker.jpg"
+      }
+    ],
+    "Cloud Developers": [
+      {
+        "name": "Ace of Cloud Developers",
+        "description": {
+          "upright": "Initiation of a cloud project, harnessing cloud technologies, spark of innovation.",
+          "reversed": "Delayed projects, resisting cloud technologies, lack of innovation.",
+          "yes_or_no": "No, there may be delays or resistance."
+        },
+        "image": "card_images/CloudDevelopers/ace_of_cloud_developers.jpg"
+      },
+      {
+        "name": "Two of Cloud Developers",
+        "description": {
+          "upright": "Planning, setting project milestones, strategic cloud adoption.",
+          "reversed": "Lack of planning, delays in milestones, hasty cloud adoption.",
+          "yes_or_no": "No, there may be lack of planning or delays."
+        },
+        "image": "card_images/CloudDevelopers/2_of_cloud_developers.jpg"
+      },
+      {
+        "name": "Three of Cloud Developers",
+        "description": {
+          "upright": "Teamwork, combined efforts, cloud-based collaboration.",
+          "reversed": "Disjointed team, lack of collaboration, miscommunication.",
+          "yes_or_no": "No, there may be difficulties in collaboration."
+        },
+        "image": "card_images/CloudDevelopers/3_of_cloud_developers.jpg"
+      },
+      {
+        "name": "Four of Cloud Developers",
+        "description": {
+          "upright": "Celebration of milestones, successful deployment, cloud-based achievements.",
+          "reversed": "Delayed celebration, deployment failure, lack of achievement.",
+          "yes_or_no": "No, there may be setbacks or lack of achievement."
+        },
+        "image": "card_images/CloudDevelopers/4_of_cloud_developers.jpg"
+      },
+      {
+        "name": "Five of Cloud Developers",
+        "description": {
+          "upright": "Challenges, competition, cloud-based conflict resolution.",
+          "reversed": "Avoiding challenges, fear of competition, conflict.",
+          "yes_or_no": "No, there may be challenges or conflict."
+        },
+        "image": "card_images/CloudDevelopers/5_of_cloud_developers.jpg"
+      },
+      {
+        "name": "Six of Cloud Developers",
+        "description": {
+          "upright": "Recognition, validation, cloud-based successes.",
+          "reversed": "Lack of recognition, feeling undervalued, cloud failure.",
+          "yes_or_no": "No, there may be lack of recognition or failure."
+        },
+        "image": "card_images/CloudDevelopers/6_of_cloud_developers.jpg"
+      },
+      {
+        "name": "Seven of Cloud Developers",
+        "description": {
+          "upright": "Defending, standing by your cloud solutions, perseverance.",
+          "reversed": "Defensive, stubbornness, inflexible solutions.",
+          "yes_or_no": "No, there may be defensiveness or lack of flexibility."
+        },
+        "image": "card_images/CloudDevelopers/7_of_cloud_developers.jpg"
+      },
+      {
+        "name": "Eight of Cloud Developers",
+        "description": {
+          "upright": "Rapid development, swift cloud deployments, progress.",
+          "reversed": "Slow development, deployment delays, stagnation.",
+          "yes_or_no": "No, there may be delays or stagnation."
+        },
+        "image": "card_images/CloudDevelopers/8_of_cloud_developers.jpg"
+      },
+      {
+        "name": "Nine of Cloud Developers",
+        "description": {
+          "upright": "Gained wisdom, experienced, leading cloud trends.",
+          "reversed": "Inexperienced, trailing behind, ignoring industry trends.",
+          "yes_or_no": "No, there may be inexperience or ignoring trends."
+        },
+        "image": "card_images/CloudDevelopers/9_of_cloud_developers.jpg"
+      },
+      {
+        "name": "Ten of Cloud Developers",
+        "description": {
+          "upright": "Overwhelmed, heavy workloads, maintaining multiple cloud systems.",
+          "reversed": "Slacking, lack of commitment, neglecting systems.",
+          "yes_or_no": "No, there may be overwhelming workloads or neglect."
+        },
+        "image": "card_images/CloudDevelopers/10_of_cloud_developers.jpg"
+      },
+      {
+        "name": "Page of Cloud Developers",
+        "description": {
+          "upright": "New beginnings, fresh approach, cloud computing novice.",
+          "reversed": "Fear of new things, old methods, resisting cloud computing.",
+          "yes_or_no": "No, there may be resistance or fear."
+        },
+        "image": "card_images/CloudDevelopers/page_of_cloud_developers.jpg"
+      },
+      {
+        "name": "Knight of Cloud Developers",
+        "description": {
+          "upright": "Passionate, adventurous, embracing new cloud tech.",
+          "reversed": "Unenthusiastic, fearful, resisting new tech.",
+          "yes_or_no": "No, there may be resistance or fear."
+        },
+        "image": "card_images/CloudDevelopers/knight_of_cloud_developers.jpg"
+      },
+      {
+        "name": "Queen of Cloud Developers",
+        "description": {
+          "upright": "Nurturing, supportive, master in cloud technologies.",
+          "reversed": "Unsupportive, unsympathetic, lack of cloud expertise.",
+          "yes_or_no": "No, there may be lack of support or expertise."
+        },
+        "image": "card_images/CloudDevelopers/queen_of_cloud_developers.jpg"
+      },
+      {
+        "name": "King of Cloud Developers",
+        "description": {
+          "upright": "Commanding, authoritative, cloud computing expert.",
+          "reversed": "Weak leadership, lack of authority, lack of cloud computing knowledge.",
+          "yes_or_no": "No, there may be weak leadership or lack of knowledge."
+        },
+        "image": "card_images/CloudDevelopers/king_of_cloud_developers.jpg"
+      }
+    ],
+    "FreeSWITCH Developers": [
+      {
+        "name": "Ace of FreeSWITCH Developers",
+        "description": {
+          "upright": "New FreeSWITCH project, potential, foundational knowledge.",
+          "reversed": "Missed opportunities, lack of foundation, stagnation.",
+          "yes_or_no": "No, there may be missed opportunities or stagnation."
+        },
+        "image": "card_images/FreeSWITCHDevs/ace_of_freeswitch_devs.jpg"
+      },
+      {
+        "name": "Two of FreeSWITCH Developers",
+        "description": {
+          "upright": "Balancing multiple projects, adaptability, flexible solutions.",
+          "reversed": "Imbalance, inflexibility, poor multitasking.",
+          "yes_or_no": "No, there may be imbalance or lack of adaptability."
+        },
+        "image": "card_images/FreeSWITCHDevs/2_of_freeswitch_devs.jpg"
+      },
+      {
+        "name": "Three of FreeSWITCH Developers",
+        "description": {
+          "upright": "Collaboration, teamwork, joint project success.",
+          "reversed": "Lack of teamwork, disjointed efforts, failed projects.",
+          "yes_or_no": "No, there may be difficulties in teamwork or failed projects."
+        },
+        "image": "card_images/FreeSWITCHDevs/3_of_freeswitch_devs.jpg"
+      },
+      {
+        "name": "Four of FreeSWITCH Developers",
+        "description": {
+          "upright": "Financial stability from projects, careful management, security.",
+          "reversed": "Financial instability, poor management, insecurity.",
+          "yes_or_no": "No, there may be financial instability or insecurity."
+        },
+        "image": "card_images/FreeSWITCHDevs/4_of_freeswitch_devs.jpg"
+      },
+      {
+        "name": "Five of FreeSWITCH Developers",
+        "description": {
+          "upright": "Financial hardship, struggle, learning from failure.",
+          "reversed": "Missed lessons, fear of failure, ongoing struggle.",
+          "yes_or_no": "No, there may be ongoing struggle or fear of failure."
+        },
+        "image": "card_images/FreeSWITCHDevs/5_of_freeswitch_devs.jpg"
+      },
+      {
+        "name": "Six of FreeSWITCH Developers",
+        "description": {
+          "upright": "Sharing knowledge, mentorship, giving back to the community.",
+          "reversed": "Greed, selfishness, withholding information.",
+          "yes_or_no": "No, there may be selfishness or lack of sharing."
+        },
+        "image": "card_images/FreeSWITCHDevs/6_of_freeswitch_devs.jpg"
+      },
+      {
+        "name": "Seven of FreeSWITCH Developers",
+        "description": {
+          "upright": "Long-term plans, continuous learning, project growth.",
+          "reversed": "Lack of long-term vision, stagnation, project decay.",
+          "yes_or_no": "No, there may be stagnation or project decay."
+        },
+        "image": "card_images/FreeSWITCHDevs/7_of_freeswitch_devs.jpg"
+      },
+      {
+        "name": "Eight of FreeSWITCH Developers",
+        "description": {
+          "upright": "Mastery, skilled work, productivity.",
+          "reversed": "Lack of skills, procrastination, unproductive.",
+          "yes_or_no": "No, there may be lack of skills or procrastination."
+        },
+        "image": "card_images/FreeSWITCHDevs/8_of_freeswitch_devs.jpg"
+      },
+      {
+        "name": "Nine of FreeSWITCH Developers",
+        "description": {
+          "upright": "Financial independence, self-reliance, successful projects.",
+          "reversed": "Dependence, unreliable, project failure.",
+          "yes_or_no": "No, there may be project failure or dependence."
+        },
+        "image": "card_images/FreeSWITCHDevs/9_of_freeswitch_devs.jpg"
+      },
+      {
+        "name": "Ten of FreeSWITCH Developers",
+        "description": {
+          "upright": "Financial success, prosperous projects, security.",
+          "reversed": "Financial failure, unsuccessful projects, insecurity.",
+          "yes_or_no": "No, there may be financial failure or insecurity."
+        },
+        "image": "card_images/FreeSWITCHDevs/10_of_freeswitch_devs.jpg"
+      },
+      {
+        "name": "Page of FreeSWITCH Developers",
+        "description": {
+          "upright": "Eagerness to learn, beginner, potential.",
+          "reversed": "Lack of enthusiasm, inexperienced, wasted potential.",
+          "yes_or_no": "No, there may be a lack of enthusiasm or wasted potential."
+        },
+        "image": "card_images/FreeSWITCHDevs/page_of_freeswitch_devs.jpg"
+      },
+      {
+        "name": "Knight of FreeSWITCH Developers",
+        "description": {
+          "upright": "Ambitious, action-oriented, FreeSWITCH advocate.",
+          "reversed": "Lack of ambition, laziness, poor advocacy.",
+          "yes_or_no": "No, there may be lack of ambition or poor advocacy."
+        },
+        "image": "card_images/FreeSWITCHDevs/knight_of_freeswitch_devs.jpg"
+      },
+      {
+        "name": "Queen of FreeSWITCH Developers",
+        "description": {
+          "upright": "Nurturing, patient, FreeSWITCH expert.",
+          "reversed": "Impatient, unkind, lack of expertise.",
+          "yes_or_no": "No, there may be impatience or lack of expertise."
+        },
+        "image": "card_images/FreeSWITCHDevs/queen_of_freeswitch_devs.jpg"
+      },
+      {
+        "name": "King of FreeSWITCH Developers",
+        "description": {
+          "upright": "Mastery, authoritative, FreeSWITCH leader.",
+          "reversed": "Lack of mastery, poor leadership, ineffective leader.",
+          "yes_or_no": "No, there may be poor leadership or lack of mastery."
+        },
+        "image": "card_images/FreeSWITCHDevs/king_of_freeswitch_devs.jpg"
+      }
+    ]
+  }
+}

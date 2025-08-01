@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignalWire Tarot Reading - Static Token</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🔮</text></svg>">
+    <style>
+        :root {
+            /* Adjustable sizes for video and card areas */
+            --card-area-height: 25vh;  /* Height of card area when visible */
+            --video-area-height-with-cards: 75vh;  /* Height of video when cards are showing */
+            --video-area-height-full: 100vh;  /* Height of video when cards are hidden */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: #1a1a2e;
+            color: #eee;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Control Panel */
+        #control-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 100;
+            border: 1px solid #d4af37;
+        }
+
+        #control-panel button {
+            background: #d4af37;
+            border: none;
+            color: #1a1a2e;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        #control-panel button:hover:not(:disabled) {
+            background: #b8941f;
+            transform: scale(1.05);
+        }
+
+        #control-panel button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        #status {
+            margin-top: 10px;
+            font-size: 14px;
+            text-align: center;
+            color: #d4af37;
+        }
+
+        /* Event Log */
+        #event-log {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 400px;
+            z-index: 100;
+            border: 1px solid #d4af37;
+            font-family: monospace;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        #event-log.collapsed {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        
+        #event-log.collapsed #event-entries {
+            display: none;
+        }
+        
+        #event-log-header {
+            color: #d4af37;
+            font-weight: bold;
+            margin-bottom: 10px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        #event-log.collapsed #event-log-header {
+            margin-bottom: 0;
+        }
+        
+        #event-entries {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .event-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #d4af37;
+            padding-left: 10px;
+        }
+        
+        .event-entry.user-event {
+            border-left-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .event-time {
+            color: #888;
+            font-size: 10px;
+        }
+        
+        .toggle-indicator {
+            font-size: 14px;
+            transition: transform 0.3s;
+        }
+        
+        #event-log.collapsed .toggle-indicator {
+            transform: rotate(-90deg);
+        }
+
+
+        /* Tarot Table Container */
+        #tarot-table {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--card-area-height);
+            background: radial-gradient(ellipse at center, #2d1b69 0%, #0f0c29 100%);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            transform: translateY(100%);
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        #tarot-table.visible {
+            transform: translateY(0);
+        }
+
+        #tarot-table.hidden {
+            transform: translateY(100%);
+        }
+
+        /* Mystical background effects */
+        #tarot-table::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(120, 81, 169, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(81, 120, 169, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(169, 81, 120, 0.2) 0%, transparent 50%);
+            animation: mystical-glow 20s ease-in-out infinite;
+        }
+
+        @keyframes mystical-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Card spread container */
+        .card-spread {
+            display: flex;
+            gap: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Card slot */
+        .card-slot {
+            position: relative;
+            width: 120px;
+            height: 180px;
+            perspective: 1000px;
+        }
+
+        .card-slot-title {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #d4af37;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            white-space: nowrap;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* Card placeholder */
+        .card-placeholder {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px dashed rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: rgba(212, 175, 55, 0.5);
+        }
+
+        /* Card */
+        .tarot-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .tarot-card.dealing {
+            animation: deal-card 1s ease-out;
+        }
+
+        @keyframes deal-card {
+            from {
+                transform: translateY(-500px) translateX(300px) rotate(720deg) scale(0.3);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) translateX(0) rotate(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .tarot-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border: 2px solid #d4af37;
+        }
+
+        .card-back {
+            background: linear-gradient(45deg, #1a1a2e 25%, #16213e 25%, #16213e 50%, #1a1a2e 50%, #1a1a2e 75%, #16213e 75%, #16213e);
+            background-size: 20px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #d4af37;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .card-back::after {
+            content: '✦';
+            position: absolute;
+            font-size: 80px;
+            opacity: 0.2;
+        }
+
+        .card-front {
+            transform: rotateY(180deg);
+            background: #fff;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #333;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 60%;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .card-name {
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .card-meaning {
+            font-size: 10px;
+            text-align: center;
+            line-height: 1.2;
+            padding: 0 5px;
+        }
+
+        .card-reversed {
+            transform: rotateY(180deg) rotate(180deg);
+        }
+
+        /* Video container */
+        #video-container {
+            height: var(--video-area-height-full);
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* SignalWire may add a wrapper div */
+        #video-container > div {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #video-container.with-cards {
+            height: var(--video-area-height-with-cards);
+        }
+
+        #video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Loading spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            border-top-color: #d4af37;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="control-panel">
+        <button id="connectBtn">Connect to Sigmond</button>
+        <button id="hangupBtn" style="display: none;">Hang Up</button>
+        <div id="status">Ready to connect</div>
+    </div>
+
+    <div id="event-log" class="collapsed">
+        <div id="event-log-header">
+            <span>Event Log</span>
+            <span class="toggle-indicator">▼</span>
+        </div>
+        <div id="event-entries"></div>
+    </div>
+
+    <div id="video-container">
+        <!-- SignalWire will insert video element here -->
+    </div>
+    
+    <div id="tarot-table" class="hidden">
+        <div class="card-spread">
+            <div class="card-slot" id="past-slot">
+                <div class="card-placeholder">Past</div>
+                <div class="card-slot-title">PAST</div>
+            </div>
+            <div class="card-slot" id="present-slot">
+                <div class="card-placeholder">Present</div>
+                <div class="card-slot-title">PRESENT</div>
+            </div>
+            <div class="card-slot" id="future-slot">
+                <div class="card-placeholder">Future</div>
+                <div class="card-slot-title">FUTURE</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load SignalWire JS SDK (locally built) -->
+    <script type="text/javascript" src="signalwire.js"></script>
+    
+    <script>
+        // Configuration
+        const DESTINATION = '/public/tony-s-swml-generator';
+        // REPLACE THIS WITH YOUR ACTUAL SIGNALWIRE TOKEN
+        const STATIC_TOKEN = 'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiY2giOiJwdWMuc3dpcmUuaW8iLCJ0eXAiOiJTQVQifQ..ldlG2mqOLIrR0y0w.2bYZGJwmtZxqNj9lZ2Xeh-H-Rxg05mIjKQk0lldUK2aCvRzu_aAbMPqDJbMSvbW7fCQ019o-ZWVmMWJNZvCLP2EROqy1X7bgySgnMCRBg_Eny3y41DuZxznGA85WTKyxCXTXsUWtid2OtaQP-2cR_yG92gIRxe_FMil5yD6plfL_ksU8nIYhNjGKW-MT8MoTanrcduVj7pPYLlLxRofnI9pgN8uL6S-yYNpFjLcmVcDAHS83pAXuq5SHFuIoVMqmuMfaMhiB8TjDlqUHWRmAviItIHBzD5rkK_ZSn5gPsCO2G4OJbCfOY6_0MwL5h8DK94GhscTlSdHcvFKVFl-EbOB8yXljLUUaENjihdiwK7b21SzDVAceYqt9emvcBOk-3nh7_ih1hgYqSnOpAdK34Gled4WuIApJGtqfTBIew4_SKF4Y0GXrzR39Fy3HZ5i9dvwR3vU_jl5-e2leRMokwTyElHrvm4VhUUe8VZoyN2vQjLRTAaRqq1hUZaAW2muOFFPLNcJL8uixiO2k.rRwkRKiVYz620NnCx2jIVw';
+        
+        let client;
+        let roomSession;
+        let cardsRevealed = false;
+        const cards = {
+            past: null,
+            present: null,
+            future: null
+        };
+
+        // UI Elements
+        const connectBtn = document.getElementById('connectBtn');
+        const hangupBtn = document.getElementById('hangupBtn');
+        const statusDiv = document.getElementById('status');
+        const eventLog = document.getElementById('event-log');
+        const eventLogHeader = document.getElementById('event-log-header');
+        const eventEntries = document.getElementById('event-entries');
+
+        // Event logging with circular reference handling
+        function logEvent(message, data = null, isUserEvent = false) {
+            const entry = document.createElement('div');
+            entry.className = isUserEvent ? 'event-entry user-event' : 'event-entry';
+            const time = new Date().toLocaleTimeString();
+            
+            let dataStr = '';
+            if (data) {
+                try {
+                    // Handle circular references
+                    const seen = new WeakSet();
+                    dataStr = JSON.stringify(data, (key, value) => {
+                        if (typeof value === 'object' && value !== null) {
+                            if (seen.has(value)) {
+                                return '[Circular Reference]';
+                            }
+                            seen.add(value);
+                        }
+                        return value;
+                    }, 2);
+                } catch (e) {
+                    dataStr = 'Error serializing data: ' + e.message;
+                }
+            }
+            
+            entry.innerHTML = `
+                <div class="event-time">${time}</div>
+                <div>${isUserEvent ? '🔴 USER EVENT: ' : ''}${message}</div>
+                ${dataStr ? `<div style="color: #888; margin-left: 10px;">${dataStr}</div>` : ''}
+            `;
+            eventEntries.appendChild(entry);
+            eventEntries.scrollTop = eventEntries.scrollHeight;
+        }
+
+        // Initialize SignalWire client (without dialing)
+        async function initializeClient() {
+            try {
+                statusDiv.textContent = 'Ready to connect';
+                logEvent('Client ready - click Connect to dial');
+                
+            } catch (error) {
+                logEvent('Initialization error', { error: error.message });
+                statusDiv.textContent = 'Initialization failed';
+            }
+        }
+
+        // Connect to call with static token
+        async function connectToCall() {
+            try {
+                // Clear previous event log entries
+                eventEntries.innerHTML = '';
+                logEvent('Starting new connection...');
+                
+                if (!STATIC_TOKEN || STATIC_TOKEN === 'YOUR_SIGNALWIRE_TOKEN_HERE') {
+                    throw new Error('Please update STATIC_TOKEN with your actual SignalWire token');
+                }
+                
+                statusDiv.textContent = 'Initializing client...';
+                logEvent('Using static token', { tokenLength: STATIC_TOKEN.length });
+
+                // Initialize client with debug options
+                // SignalWire should be available on window when using UMD build
+                const SignalWireSDK = window.SignalWire || SignalWire;
+                logEvent('SignalWire SDK check', { 
+                    hasWindow: typeof window !== 'undefined',
+                    hasSignalWire: typeof SignalWire !== 'undefined',
+                    hasWindowSignalWire: typeof window.SignalWire !== 'undefined',
+                    SignalWireType: typeof SignalWireSDK,
+                    SignalWireKeys: SignalWireSDK ? Object.keys(SignalWireSDK) : []
+                });
+
+                // Based on the keys, we need to use Fabric
+                if (typeof SignalWireSDK.Fabric === 'function') {
+                    client = await SignalWireSDK.Fabric({
+                        token: STATIC_TOKEN,
+                        logLevel: 'debug',
+                        debug: { logWsTraffic: false }
+                    });
+                } else if (typeof SignalWireSDK.SignalWire === 'function') {
+                    client = await SignalWireSDK.SignalWire({
+                        token: STATIC_TOKEN,
+                        logLevel: 'debug',
+                        debug: { logWsTraffic: false }
+                    });
+                } else {
+                    throw new Error('SignalWire SDK not found or not a function');
+                }
+
+                logEvent('Client initialized');
+
+                // Subscribe to ALL events on the client to debug
+                const originalEmit = client.emit;
+                client.emit = function(event, ...args) {
+                    if (event !== 'signalwire.socket.message' && event !== 'signalwire.socket.open') {
+                        logEvent(`Client event: ${event}`, args[0]);
+                    }
+                    return originalEmit.apply(this, [event, ...args]);
+                };
+
+                // Try multiple event patterns
+                client.on('user_event', (params) => {
+                    console.log('🔴 CLIENT EVENT: user_event (no prefix)', params);
+                    logEvent('user_event (no prefix)', params, true);
+                    handleUserEvent(params);
+                });
+
+                client.on('calling.user_event', (params) => {
+                    console.log('🟠 CLIENT EVENT: calling.user_event', params);
+                    logEvent('calling.user_event', params, true);
+                    handleUserEvent(params);
+                });
+
+                client.on('signalwire.event', (params) => {
+                    console.log('🟡 CLIENT EVENT: signalwire.event', params);
+                    if (params.event_type === 'user_event') {
+                        console.log('✅ Found user_event in signalwire.event!', params.params);
+                        logEvent('Found user_event in signalwire.event', params.params, true);
+                        handleUserEvent(params.params || params);
+                    } else {
+                        logEvent('signalwire.event', params);
+                    }
+                });
+
+                statusDiv.textContent = 'Dialing...';
+                
+                // Dial into the room
+                roomSession = await client.dial({
+                    to: DESTINATION,
+                    rootElement: document.getElementById('video-container'),
+                    audio: true,
+                    video: true,
+                    negotiateVideo: true,
+                    userVariables: {
+                        userName: 'Tarot Reader',
+                        interface: 'raw-sdk-static',
+                        timestamp: new Date().toISOString()
+                    }
+                });
+
+                logEvent('Dial initiated');
+
+                // Subscribe to room session events
+                roomSession.on('room.started', (params) => {
+                    logEvent('room.started', params);
+                });
+
+                roomSession.on('call.joined', (params) => {
+                    logEvent('call.joined', params);
+                    statusDiv.textContent = 'Connected to Sigmond';
+                    connectBtn.style.display = 'none';
+                    hangupBtn.style.display = 'inline-block';
+                });
+
+                roomSession.on('member.joined', (params) => {
+                    logEvent('member.joined', params);
+                });
+
+                roomSession.on('member.left', (params) => {
+                    logEvent('member.left', params);
+                });
+
+                roomSession.on('room.left', (params) => {
+                    logEvent('room.left', params);
+                    handleDisconnect();
+                });
+
+                roomSession.on('destroy', (params) => {
+                    logEvent('destroy', params);
+                    handleDisconnect();
+                });
+
+                // Note: user_event comes through the client, not roomSession
+                // Commenting out roomSession listener as per user guidance
+                /*
+                roomSession.on('user_event', (params) => {
+                    console.log('🟢 ROOMSESSION EVENT: user_event', params);
+                    logEvent('user_event on roomSession', params);
+                    handleUserEvent(params);
+                });
+                */
+
+                // Monitor all roomSession events
+                const originalRoomEmit = roomSession.emit;
+                roomSession.emit = function(event, ...args) {
+                    if (!event.includes('member.updated') && event !== 'call.joined') {
+                        // Log only safe properties to avoid circular references
+                        const safeData = args[0] ? {
+                            type: args[0].type,
+                            event_type: args[0].event_type,
+                            params: args[0].params,
+                            // Add other safe properties as needed
+                            hasCallObject: !!args[0].call,
+                            hasMemberObject: !!args[0].member
+                        } : args[0];
+                        logEvent(`RoomSession event: ${event}`, safeData);
+                    }
+                    return originalRoomEmit.apply(this, [event, ...args]);
+                };
+                
+                // Start the call - this might be needed based on the widget code
+                logEvent('Starting call...');
+                await roomSession.start();
+                
+            } catch (error) {
+                logEvent('Connection error', { error: error.message, stack: error.stack });
+                statusDiv.textContent = 'Connection failed';
+                connectBtn.style.display = 'inline-block';
+                hangupBtn.style.display = 'none';
+            }
+        }
+
+        function handleDisconnect() {
+            // Clean up client
+            if (client) {
+                client.disconnect();
+                client = null;
+            }
+            roomSession = null;
+            statusDiv.textContent = 'Disconnected';
+            connectBtn.style.display = 'inline-block';
+            hangupBtn.style.display = 'none';
+            clearCards();
+            logEvent('Disconnected - ready for new connection');
+        }
+
+        async function hangup() {
+            if (roomSession) {
+                try {
+                    await roomSession.hangup();
+                } catch (e) {
+                    logEvent('Hangup error', { error: e.message });
+                }
+            }
+            handleDisconnect();
+        }
+
+        function handleUserEvent(eventData) {
+            logEvent('Processing user event', eventData, true);
+            
+            // Also log to console for debugging
+            console.log('🎯 USER EVENT RECEIVED IN HANDLER:');
+            console.log('Event Data:', eventData);
+            console.log('Event Type:', eventData?.type);
+            console.log('Event Payload:', eventData?.payload);
+            console.log('Full Event Object:', JSON.stringify(eventData, null, 2));
+            console.log('----------------------------');
+            
+            if (eventData.type === 'show_tarot_cards' && eventData.reading) {
+                console.log('📋 Showing tarot cards:', eventData.reading);
+                logEvent('Showing tarot cards', null, true);
+                if (!cardsRevealed) {
+                    revealCardArea();
+                }
+                setTimeout(() => {
+                    dealCards(eventData.reading);
+                }, cardsRevealed ? 0 : 800);
+            } else if (eventData.type === 'flip_card') {
+                console.log('🔄 Flipping card:', eventData.position);
+                logEvent(`Flipping ${eventData.position} card`, null, true);
+                flipCard(eventData.position);
+            } else if (eventData.type === 'clear_cards') {
+                console.log('🧹 Clearing cards');
+                logEvent('Clearing cards', null, true);
+                clearCards();
+            } else {
+                console.log('❓ Unknown user event type:', eventData.type);
+                logEvent(`Unknown event type: ${eventData.type}`, null, true);
+            }
+        }
+
+        function dealCards(reading) {
+            const positions = ['past', 'present', 'future'];
+            
+            positions.forEach((position, index) => {
+                setTimeout(() => {
+                    if (reading[position]) {
+                        createCard(position, reading[position]);
+                    }
+                }, index * 600);
+            });
+        }
+
+        function createCard(position, cardData) {
+            const slot = document.getElementById(`${position}-slot`);
+            const placeholder = slot.querySelector('.card-placeholder');
+            
+            cards[position] = cardData;
+            
+            const card = document.createElement('div');
+            card.className = 'tarot-card dealing';
+            card.id = `${position}-card`;
+            
+            const cardBack = document.createElement('div');
+            cardBack.className = 'card-face card-back';
+            cardBack.innerHTML = '✦';
+            
+            const cardFront = document.createElement('div');
+            cardFront.className = `card-face card-front ${cardData.reversed ? 'card-reversed' : ''}`;
+            
+            cardFront.innerHTML = `
+                <img class="card-image" src="${cardData.image}" alt="${cardData.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"150\" viewBox=\"0 0 100 150\"%3E%3Crect width=\"100\" height=\"150\" fill=\"%23ddd\"%2F%3E%3Ctext x=\"50\" y=\"75\" text-anchor=\"middle\" fill=\"%23666\" font-size=\"12\"%3E${encodeURIComponent(cardData.name)}%3C/text%3E%3C/svg%3E'">
+                <div class="card-name">${cardData.name}</div>
+                <div class="card-meaning">${cardData.meaning}</div>
+            `;
+            
+            card.appendChild(cardBack);
+            card.appendChild(cardFront);
+            
+            placeholder.style.display = 'none';
+            slot.appendChild(card);
+        }
+
+        function flipCard(position) {
+            const card = document.getElementById(`${position}-card`);
+            if (card && !card.classList.contains('flipped')) {
+                card.classList.add('flipped');
+            }
+        }
+
+        function revealCardArea() {
+            const tarotTable = document.getElementById('tarot-table');
+            const videoContainer = document.getElementById('video-container');
+            
+            tarotTable.classList.remove('hidden');
+            tarotTable.classList.add('visible');
+            videoContainer.classList.add('with-cards');
+            cardsRevealed = true;
+        }
+
+        function hideCardArea() {
+            const tarotTable = document.getElementById('tarot-table');
+            const videoContainer = document.getElementById('video-container');
+            
+            tarotTable.classList.remove('visible');
+            tarotTable.classList.add('hidden');
+            videoContainer.classList.remove('with-cards');
+            cardsRevealed = false;
+        }
+
+        function clearCards() {
+            ['past', 'present', 'future'].forEach(position => {
+                const slot = document.getElementById(`${position}-slot`);
+                const card = document.getElementById(`${position}-card`);
+                const placeholder = slot.querySelector('.card-placeholder');
+                
+                if (card) {
+                    card.remove();
+                }
+                if (placeholder) {
+                    placeholder.style.display = 'flex';
+                }
+                
+                cards[position] = null;
+            });
+            setTimeout(() => {
+                hideCardArea();
+            }, 1000);
+        }
+
+        // Event listeners
+        connectBtn.addEventListener('click', connectToCall);
+        hangupBtn.addEventListener('click', hangup);
+        
+        // Toggle event log
+        eventLogHeader.addEventListener('click', () => {
+            eventLog.classList.toggle('collapsed');
+        });
+
+        // Initialize on load (but don't connect)
+        window.addEventListener('load', () => {
+            logEvent('Page loaded');
+            initializeClient();
+        });
+    </script>
+</body>
+</html>

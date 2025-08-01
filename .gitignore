@@ -1,0 +1,54 @@
+# Bot runtime files
+bot/sigmond_tarot.log
+bot/sigmond_tarot.pid
+bot/*.log
+bot/*.pid
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+
+# Editor backup files
+*~
+*.swp
+*.swo
+*#
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# Node.js (if used)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Local configuration
+config.local.json
+.env.local
+
+# Session data
+sessions/
+*.session

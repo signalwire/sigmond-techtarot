@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignalWire Tarot Reading - Static Token</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🔮</text></svg>">
+    <style>
+        :root {
+            /* Adjustable sizes for video and card areas */
+            --card-area-height: 40vh;  /* Height of card area when visible */
+            --video-area-height-with-cards: 60vh;  /* Height of video when cards are showing */
+            --video-area-height-full: 100vh;  /* Height of video when cards are hidden */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #1a1a2e;
+            background-image: url('./bg.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+            color: #eee;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Control Panel */
+        #control-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 10;  /* Higher z-index to float on top */
+            border: 1px solid #d4af37;
+            backdrop-filter: blur(5px);
+        }
+
+        #control-panel button {
+            background: #d4af37;
+            border: none;
+            color: #1a1a2e;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        #control-panel button:hover:not(:disabled) {
+            background: #b8941f;
+            transform: scale(1.05);
+        }
+
+        #control-panel button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        #status {
+            margin-top: 10px;
+            font-size: 14px;
+            text-align: center;
+            color: #d4af37;
+        }
+
+        /* Event Log */
+        #event-log {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 400px;
+            z-index: 100;
+            border: 1px solid #d4af37;
+            font-family: monospace;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        #event-log.collapsed {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        
+        #event-log.collapsed #event-entries {
+            display: none;
+        }
+        
+        #event-log-header {
+            color: #d4af37;
+            font-weight: bold;
+            margin-bottom: 10px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        #event-log.collapsed #event-log-header {
+            margin-bottom: 0;
+        }
+        
+        #event-entries {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .event-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #d4af37;
+            padding-left: 10px;
+        }
+        
+        .event-entry.user-event {
+            border-left-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .event-time {
+            color: #888;
+            font-size: 10px;
+        }
+        
+        .toggle-indicator {
+            font-size: 14px;
+            transition: transform 0.3s;
+        }
+        
+        #event-log.collapsed .toggle-indicator {
+            transform: rotate(-90deg);
+        }
+
+
+        /* Tarot Table Container */
+        #tarot-table {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--card-area-height);
+            background: radial-gradient(ellipse at center, #2d1b69 0%, #0f0c29 100%);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+            transform: translateY(100%);
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        #tarot-table.visible {
+            transform: translateY(0);
+        }
+
+        #tarot-table.hidden {
+            transform: translateY(100%);
+        }
+
+        /* Mystical background effects */
+        #tarot-table::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(120, 81, 169, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(81, 120, 169, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(169, 81, 120, 0.2) 0%, transparent 50%);
+            animation: mystical-glow 20s ease-in-out infinite;
+        }
+
+        @keyframes mystical-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Card spread container */
+        .card-spread {
+            display: flex;
+            gap: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Card slot */
+        .card-slot {
+            position: relative;
+            width: calc(var(--card-area-height) * 0.95 * 0.592);  /* 95% of container height * aspect ratio */
+            height: calc(var(--card-area-height) * 0.95);  /* 95% of container height */
+            perspective: 1000px;
+        }
+
+        .card-slot-title {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #d4af37;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            white-space: nowrap;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* Card placeholder */
+        .card-placeholder {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px dashed rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: rgba(212, 175, 55, 0.5);
+        }
+
+        /* Card */
+        .tarot-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .tarot-card.dealing {
+            animation: deal-card 1s ease-out;
+        }
+
+        @keyframes deal-card {
+            from {
+                transform: translateY(-500px) translateX(300px) rotate(720deg) scale(0.3);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) translateX(0) rotate(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .tarot-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .card-back {
+            background-image: url('../card_images/tarot_back.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-front {
+            transform: rotateY(180deg);
+            background: transparent;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .card-image {
+            width: 106%;
+            height: 106%;
+            object-fit: contain;
+            border-radius: 10px;
+            transform: scale(1.06);
+        }
+        
+        /* Ensure consistent sizing for all cards */
+        .tarot-card .card-image {
+            width: 106% !important;
+            height: 106% !important;
+            transform: scale(1.06) !important;
+        }
+        
+        /* Reversed cards need both scale and rotate */
+        .tarot-card .card-image.reversed {
+            transform: scale(1.06) rotate(180deg) !important;
+        }
+
+        .card-name {
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .card-meaning {
+            font-size: 10px;
+            text-align: center;
+            line-height: 1.2;
+            padding: 0 5px;
+        }
+
+        .card-reversed {
+            transform: rotateY(180deg) rotate(180deg);
+        }
+
+        /* Video container */
+        #video-container {
+            position: relative;
+            height: var(--video-area-height-full);
+            background: transparent;
+            transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* SignalWire may add a wrapper div */
+        #video-container > div {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #video-container.with-cards {
+            height: var(--video-area-height-with-cards);
+        }
+
+        #video-container video {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+
+        /* Loading spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            border-top-color: #d4af37;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Wrapper to control positioning -->
+    <div id="video-wrapper" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;">
+        <div id="video-container">
+            <!-- SignalWire will insert video element here -->
+        </div>
+    </div>
+    
+    <!-- Deck placeholder shown before call starts -->
+    <div id="deck-placeholder" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5;">
+        <img src="../card_images/tarot_back.jpg" alt="Tarot Deck" style="width: 400px; height: auto; border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
+    </div>
+
+    <!-- Control panel floats over everything -->
+    <div id="control-panel">
+        <button id="connectBtn">Connect to Sigmond</button>
+        <button id="hangupBtn" style="display: none;">Hang Up</button>
+        <button id="muteBtn" style="display: none;">Mute</button>
+        <div style="margin-top: 10px;">
+            <label style="color: #d4af37; font-size: 14px; margin-right: 15px;">
+                <input type="checkbox" id="startMuted" style="margin-right: 5px;">
+                Start muted
+            </label>
+            <label style="color: #d4af37; font-size: 14px;">
+                <input type="checkbox" id="showLog" style="margin-right: 5px;">
+                Show log
+            </label>
+        </div>
+        <div id="status">Ready to connect</div>
+    </div>
+
+    <div id="event-log" class="collapsed" style="display: none;">
+        <div id="event-log-header">
+            <span>Event Log</span>
+            <span class="toggle-indicator">▼</span>
+        </div>
+        <div id="event-entries"></div>
+    </div>
+    
+    <!-- Tarot table (slides up from bottom) -->
+    <div id="tarot-table" class="hidden">
+        <div class="card-spread">
+            <div class="card-slot" id="past-slot">
+                <div class="card-placeholder">Past</div>
+                <div class="card-slot-title">PAST</div>
+            </div>
+            <div class="card-slot" id="present-slot">
+                <div class="card-placeholder">Present</div>
+                <div class="card-slot-title">PRESENT</div>
+            </div>
+            <div class="card-slot" id="future-slot">
+                <div class="card-placeholder">Future</div>
+                <div class="card-slot-title">FUTURE</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load SignalWire JS SDK (locally built) -->
+    <script type="text/javascript" src="signalwire.js"></script>
+    
+    <!-- Load application JavaScript -->
+    <script type="text/javascript" src="app.js"></script>
+</body>
+</html>

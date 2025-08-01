@@ -1,0 +1,106 @@
+<html>
+  <body>
+    
+<style>
+  /* This class will be removed from button when the widget fully loads. */
+  .demo-button-disabled {
+   opacity: 0.7;
+   pointer-events: none;
+  }
+  body {
+  background-image: url('background.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  }
+  button {
+  padding: 0 20px; /* top/bottom = 0px, left/right = 20px */
+  font-size: 32px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: auto;
+  height: 50px;
+  margin: 0 auto;
+
+  display: flex;             /* ADD these 3 lines */
+  align-items: center;       /* vertical center */
+  justify-content: center;   /* horizontal center */
+  }
+  
+
+      #callButton {
+        background-color: #4CAF50;
+        color: white;
+      }
+
+      #callButton:hover {
+        background-color: #45a049;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      #callButton:disabled {
+        background-color: #a8a8a8;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+
+  
+ </style>
+
+
+<br><br><br><br>
+
+<center>
+  <button id="callButton" class="demo-button-disabled">Call</button>
+</center>
+
+<script>
+  const url = new URL(window.location.href);
+  const ext = url.searchParams.get('ext') || 'unknown';
+  document.getElementById('callButton').textContent = `Call ${ext}`;
+
+</script>
+
+<!-- end of body -->
+
+<call-widget
+  button-Id="callButton"
+  debug-ws-traffic=true
+  log-level=debug	
+    token="eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiY2giOiJwdWMuc3dpcmUuaW8iLCJ0eXAiOiJTQVQifQ..ldlG2mqOLIrR0y0w.2bYZGJwmtZxqNj9lZ2Xeh-H-Rxg05mIjKQk0lldUK2aCvRzu_aAbMPqDJbMSvbW7fCQ019o-ZWVmMWJNZvCLP2EROqy1X7bgySgnMCRBg_Eny3y41DuZxznGA85WTKyxCXTXsUWtid2OtaQP-2cR_yG92gIRxe_FMil5yD6plfL_ksU8nIYhNjGKW-MT8MoTanrcduVj7pPYLlLxRofnI9pgN8uL6S-yYNpFjLcmVcDAHS83pAXuq5SHFuIoVMqmuMfaMhiB8TjDlqUHWRmAviItIHBzD5rkK_ZSn5gPsCO2G4OJbCfOY6_0MwL5h8DK94GhscTlSdHcvFKVFl-EbOB8yXljLUUaENjihdiwK7b21SzDVAceYqt9emvcBOk-3nh7_ih1hgYqSnOpAdK34Gled4WuIApJGtqfTBIew4_SKF4Y0GXrzR39Fy3HZ5i9dvwR3vU_jl5-e2leRMokwTyElHrvm4VhUUe8VZoyN2vQjLRTAaRqq1hUZaAW2muOFFPLNcJL8uixiO2k.rRwkRKiVYz620NnCx2jIVw"
+      support-video="true"
+      support-audio="true"
+      destination="/public/tony-s-swml-generator"
+      log-level="debug"
+      receive-calls="false"
+      window-mode="video+transcript"
+    ></call-widget>
+    
+
+
+<script src="https://cdn.jsdelivr.net/npm/@signalwire/call-widget@3.2.0/dist/c2c-widget-full.umd.min.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/@niravcodes/call-widget/dist/c2c-widget-full.umd.min.js"></script>-->
+
+</html>
+</body>
+
+<script>
+  const widget = document.querySelector("call-widget");
+  widget.setAttribute("userVariables", JSON.stringify({testing: true}));
+
+  widget.addEventListener("beforecall", () => {
+    widget.setAttribute("userVariables", JSON.stringify({to: ext}));
+    console.log("beforecall");
+  });
+
+
+</script>
+
+

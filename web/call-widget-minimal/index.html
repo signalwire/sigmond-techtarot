@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal Call Widget</title>
+</head>
+<body>
+    <h1>Minimal Static Example</h1>
+    
+    <!-- Button -->
+    <button id="call">Call Now</button>
+    
+    <!-- Widget with hardcoded token -->
+    <call-widget
+        id="widget"
+        button-id="call"
+        destination="/public/sigmond"
+        token="YOUR_TOKEN_HERE"
+        support-audio="true"
+        support-video="true"
+    ></call-widget>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.signalwire.com/@signalwire/js@dev"></script>
+    <script src="/static/js/call-widget.js"></script>
+    
+    <script>
+        // Set user variables
+        document.getElementById('widget').setUserVariables({
+            userName: 'John Doe',
+            userEmail: 'john@example.com',
+            department: 'Sales'
+        });
+    </script>
+</body>
+</html>

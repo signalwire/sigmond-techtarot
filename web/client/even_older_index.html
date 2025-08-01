@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignalWire AI</title>
+    <script type="text/javascript" src="https://www.unpkg.com/@signalwire/js@dev"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+      button {
+        padding: 0;
+        font-size: 24px;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+      }
+
+      #callButton {
+        background-color: #4CAF50;
+        color: white;
+      }
+
+      #callButton:hover {
+        background-color: #45a049;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      #hangupButton {
+        background-color: #f44336;
+        color: white;
+      }
+
+      #hangupButton:hover {
+        background-color: #da190b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      #callButton:disabled {
+        background-color: #a8a8a8;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .video-container {
+        width: 50%;
+        margin: 0 auto;
+        position: relative;
+        aspect-ratio: 16/9;
+        min-height: 360px;
+        background-color: #f0f0f0;
+        background-image: url('background.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        border-radius: 12px;
+        overflow: visible;
+      }
+
+      .settings-control {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        z-index: 20;
+      }
+
+      #settingsButton {
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+      }
+
+      #settingsButton:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .call-controls {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        display: flex;
+        gap: 20px;
+      }
+
+      #callButton,
+      #hangupButton {
+        margin: 0;
+      }
+
+      #localVideo {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 25%;
+        height: auto;
+        border-radius: 8px;
+        transform: scaleX(-1);
+        z-index: 10;
+        object-fit: cover;
+        min-width: 100px;
+        max-width: 200px;
+        max-height: 30vh;
+        display: none;
+      }
+
+      #rootElement {
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      #rootElement .mcuContent {
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      #rootElement .paddingWrapper {
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      #rootElement video {
+        border-radius: 12px;
+      }
+
+      .device-selectors {
+        position: absolute;
+        bottom: 60px;
+        left: 20px;
+        background-color: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 19;
+        min-width: 280px;
+      }
+
+      .device-selectors.show {
+        display: flex;
+      }
+
+      .device-selectors select {
+        width: 100%;
+        padding: 8px 8px 8px 35px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        background-color: white;
+        font-size: 14px;
+        cursor: pointer;
+        outline: none;
+      }
+
+      .select-wrapper {
+        position: relative;
+        width: 100%;
+      }
+
+      .select-wrapper i {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+        font-size: 16px;
+      }
+
+      .device-selectors select:hover {
+        border-color: #999;
+      }
+
+      .device-selectors select:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+      }
+
+      #errorContainer {
+        display: none;
+        color: red;
+        text-align: center;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 600px;
+        /* Adjust as needed */
+      }
+
+      .chat-container {
+        width: 42%;
+        margin: 0 auto;
+        position: relative;
+        aspect-ratio: 16/9;
+        min-height: 360px;
+        background-color: #f0f0f0;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        border-radius: 12px;
+        overflow: visible;
+      }
+
+      .messages-container {
+        padding: 20px;
+        height: 100%;
+        overflow-y: auto;
+        background-color: white;
+        border-radius: 12px;
+      }
+
+      .containers-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 80px;
+        /* Increase gap significantly */
+        width: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      .message {
+        margin: 10px;
+        padding: 10px 15px;
+        border-radius: 18px;
+        max-width: 100%;
+        word-wrap: break-word;
+        position: relative;
+        font-size: 16px;
+        line-height: 1.4;
+      }
+
+      .ai-message {
+        background-color: #e9e9eb;  /* iOS gray color */
+        color: #000;
+        margin-right: auto;
+        margin-left: 10px;
+        border-bottom-left-radius: 4px;
+        font-size: 32px;  /* Double the font size */
+      }
+
+      .ai-message::after {
+        content: "";
+        position: absolute;
+        left: -10px;
+        bottom: 0;
+        width: 20px;
+        height: 25px;
+        border-bottom-right-radius: 16px;
+        border-bottom-left-radius: 16px;
+        background-color: #e9e9eb;
+        transform: translate(0, 6px) rotate(45deg);
+        z-index: -1;
+      }
+
+      .user-message {
+        background-color: #0b93f6;  /* iOS blue color */
+        color: white;
+        margin-left: auto;
+        margin-right: 10px;
+        border-bottom-right-radius: 4px;
+        text-align: right;
+        font-size: 32px;  /* Double the font size */
+      }
+
+      .user-message::after {
+        content: "";
+        position: absolute;
+        right: -10px;
+        bottom: 0;
+        width: 20px;
+        height: 25px;
+        border-bottom-right-radius: 16px;
+        border-bottom-left-radius: 16px;
+        background-color: #0b93f6;
+        transform: translate(0, 6px) rotate(-45deg);
+        z-index: -1;
+      }
+
+      #muteButton {
+        background-color: #666;
+        color: white;
+      }
+
+      #muteButton:hover {
+        background-color: #555;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      #muteButton.muted {
+        background-color: #ff4444;
+      }
+
+      #muteButton.muted i {
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body>
+      <input type="hidden" id="tokenInput" value="eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwiY2giOiJwdWMuc3dpcmUuaW8iLCJ0eXAiOiJTQVQifQ..ldlG2mqOLIrR0y0w.2bYZGJwmtZxqNj9lZ2Xeh-H-Rxg05mIjKQk0lldUK2aCvRzu_aAbMPqDJbMSvbW7fCQ019o-ZWVmMWJNZvCLP2EROqy1X7bgySgnMCRBg_Eny3y41DuZxznGA85WTKyxCXTXsUWtid2OtaQP-2cR_yG92gIRxe_FMil5yD6plfL_ksU8nIYhNjGKW-MT8MoTanrcduVj7pPYLlLxRofnI9pgN8uL6S-yYNpFjLcmVcDAHS83pAXuq5SHFuIoVMqmuMfaMhiB8TjDlqUHWRmAviItIHBzD5rkK_ZSn5gPsCO2G4OJbCfOY6_0MwL5h8DK94GhscTlSdHcvFKVFl-EbOB8yXljLUUaENjihdiwK7b21SzDVAceYqt9emvcBOk-3nh7_ih1hgYqSnOpAdK34Gled4WuIApJGtqfTBIew4_SKF4Y0GXrzR39Fy3HZ5i9dvwR3vU_jl5-e2leRMokwTyElHrvm4VhUUe8VZoyN2vQjLRTAaRqq1hUZaAW2muOFFPLNcJL8uixiO2k.rRwkRKiVYz620NnCx2jIVw"/>
+
+    <input type="hidden" id="destination" value="/public/tony-s-swml-generator" />
+    <div id="outer" class="video-container">
+
+      <div id="rootElement">
+      </div>
+      <video id="localVideo" autoplay playsinline muted></video>
+      <div class="settings-control">
+        <button id="settingsButton">
+          <i class="fas fa-cog"></i>
+        </button>
+        <div class="device-selectors">
+          <div class="select-wrapper">
+            <i class="fas fa-microphone"></i>
+            <select id="audioInput">
+              <option value="">Select Microphone</option>
+            </select>
+          </div>
+          <div class="select-wrapper">
+            <i class="fas fa-volume-up"></i>
+            <select id="audioOutput">
+              <option value="">Select Speaker</option>
+            </select>
+          </div>
+          <div class="select-wrapper">
+            <i class="fas fa-video"></i>
+            <select id="videoInput">
+              <option value="">Select Camera</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="call-controls">
+        <button id="muteButton">
+          <i class="fas fa-microphone"></i>
+        </button>
+        <button id="callButton">
+          <i class="fas fa-phone"></i>
+        </button>
+        <button id="hangupButton" style="display:none;">
+          <i class="fas fa-phone-slash"></i>
+        </button>
+      </div>
+
+    </div>
+    <div id="errorContainer" style="display:none; color:red;"></div>
+    <div class="containers-wrapper">
+      <div id="chatContainer" class="chat-container">
+        <div id="messagesContainer" class="messages-container"></div>
+      </div>
+    </div>
+    <script>
+      const CONFIG = {
+        DEBUG: {
+          logWsTraffic: false,
+        },
+        LOG_LEVEL: 'debug'
+      };
+
+      let currentCall;
+      let client;
+      let currentPartialMessageDiv = null;
+
+      ['ci-SAT', 'pt-SAT', 'as-SAT'].forEach(key => sessionStorage.removeItem(key))
+
+      function showError(message) {
+        const errorContainer = document.getElementById('errorContainer');
+        if (errorContainer) {
+          errorContainer.textContent = message;
+          errorContainer.style.display = 'block';
+        } else {
+          alert(message); // Fallback to alert if no error container is present
+        }
+      }
+
+      function clearError() {
+        const errorContainer = document.getElementById('errorContainer');
+        if (errorContainer) {
+          errorContainer.textContent = '';
+          errorContainer.style.display = 'none';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', async () => {
+        const token = document.getElementById('tokenInput').value;
+        try {
+          client = await SignalWire.SignalWire({
+            host: 'dev.swire.io',
+            token: token,
+            debug: CONFIG.DEBUG,
+            logLevel: CONFIG.LOG_LEVEL
+          });
+
+          // Call loadDevices to populate device dropdowns
+        await loadDevices();
+
+          
+          client.on('ai.transparent_barge', (params) => {
+            if (params.combined_text) {
+              console.log('AI Transparent Barge Event:', params.combined_text);
+              
+              // Get the messages container
+              const messagesContainer = document.getElementById('messagesContainer');
+              
+              // CRITICAL DEBUGGING - this will show us the DOM structure
+              console.log('Current message container HTML:', messagesContainer.innerHTML);
+              
+              // Approach 1: Remove the last AI message directly
+              const allMessages = messagesContainer.querySelectorAll('.message');
+              let foundLastAI = false;
+              
+              // Loop through messages in reverse to find and remove the last AI message
+              for (let i = allMessages.length - 1; i >= 0; i--) {
+                if (!foundLastAI && allMessages[i].classList.contains('ai-message')) {
+                  try {
+                    console.log('Removing last AI message:', allMessages[i].textContent);
+                    messagesContainer.removeChild(allMessages[i]);
+                    foundLastAI = true;
+                    console.log('Successfully removed last AI message');
+                  } catch (e) {
+                    console.error('Error removing last AI message:', e);
+                  }
+                }
+                
+                // Remove all user messages regardless of position
+                if (allMessages[i].classList.contains('user-message')) {
+                  try {
+                    console.log('Removing user message:', allMessages[i].textContent);
+                    messagesContainer.removeChild(allMessages[i]);
+                  } catch (e) {
+                    console.error('Error removing user message:', e);
+                  }
+                }
+              }
+              
+              // Approach 2 (fallback): If the last AI message wasn't found/removed, try another approach
+              if (!foundLastAI) {
+                console.log('Fallback: Trying alternative approach to remove last AI message');
+                // Try to get the last AI message again after DOM might have changed
+                const aiMessages = messagesContainer.querySelectorAll('.ai-message');
+                if (aiMessages.length > 0) {
+                  try {
+                    const lastAI = aiMessages[aiMessages.length - 1];
+                    console.log('Removing last AI message (fallback):', lastAI.textContent);
+                    messagesContainer.removeChild(lastAI);
+                    console.log('Successfully removed last AI message (fallback)');
+                  } catch (e) {
+                    console.error('Fallback approach also failed to remove AI message:', e);
+                  }
+                }
+              }
+              
+              // Approach 3 (nuclear option): If all else fails, clear and rebuild
+              // This guarantees we remove all user messages and the last AI message
+              if (!foundLastAI) {
+                console.log('Nuclear option: Clearing all messages and rebuilding');
+                
+                // Store all AI messages except the last one
+                const aiMessages = Array.from(messagesContainer.querySelectorAll('.ai-message'));
+                const aiMessagesToKeep = aiMessages.slice(0, aiMessages.length - 1);
+                const aiContents = aiMessagesToKeep.map(msg => msg.textContent);
+                
+                // Clear everything
+                messagesContainer.innerHTML = '';
+                console.log('Cleared all messages');
+                
+                // Rebuild AI messages (except the last one)
+                aiContents.forEach(text => {
+                  appendMessage(text, 'ai');
+                });
+                console.log('Rebuilt AI messages (without the last one)');
+              }
+              
+              // Reset the partial message div if it exists
+              if (currentPartialMessageDiv) {
+                if (currentPartialMessageDiv.parentNode) {
+                  try {
+                    currentPartialMessageDiv.parentNode.removeChild(currentPartialMessageDiv);
+                  } catch (e) {
+                    console.error('Error removing partial message div:', e);
+                  }
+                }
+                currentPartialMessageDiv = null;
+              }
+              
+              // Add the new user message with the combined text
+              appendMessage(params.combined_text, 'user');
+              console.log('Added new user message with combined text');
+              
+              // Log final state for verification
+              console.log('Message container after updates:', messagesContainer.innerHTML);
+              
+              // Scroll to the bottom of the chat
+              messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+          });
+          // Add event listeners for AI events
+          client.on('ai.partial_result', (params) => {
+            console.log('AI Partial Result:', params.text);
+            if (!currentPartialMessageDiv) {
+              currentPartialMessageDiv = document.createElement('div');
+              currentPartialMessageDiv.className = 'message user-message';
+              const messagesContainer = document.getElementById('messagesContainer');
+              messagesContainer.appendChild(currentPartialMessageDiv);
+            }
+            currentPartialMessageDiv.textContent = params.text;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+          });
+
+          client.on('ai.speech_detect', (params) => {
+            const cleanText = params.text.replace(/\{confidence=[\d.]+\}/, '');
+            console.log('AI Speech Detected:', cleanText);
+            if (currentPartialMessageDiv) {
+              currentPartialMessageDiv.textContent = cleanText;
+              currentPartialMessageDiv = null;
+            } else {
+              appendMessage(cleanText, 'user');
+            }
+          });
+
+          client.on('ai.completion', (params) => {
+            console.log('AI Completion:', params.text);
+            if (currentPartialMessageDiv) {
+              currentPartialMessageDiv.textContent = params.text;
+              currentPartialMessageDiv = null;
+            } else {
+              appendMessage(params.text, 'ai');
+            }
+          });
+
+          client.on('ai.response_utterance', (params) => {
+
+            if (params.utterance) {
+              console.log('AI Response Utterance:', params.utterance);
+              if (!currentPartialMessageDiv) {
+                currentPartialMessageDiv = document.createElement('div');
+                currentPartialMessageDiv.className = 'message ai-message';
+                const messagesContainer = document.getElementById('messagesContainer');
+                messagesContainer.appendChild(currentPartialMessageDiv);
+              }
+              currentPartialMessageDiv.textContent += " " + params.utterance;
+              messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+          });
+
+          // Add event listener for settings button to toggle device selectors
+          const settingsButton = document.getElementById('settingsButton');
+          const deviceSelectors = document.querySelector('.device-selectors');
+          settingsButton.addEventListener('click', () => {
+            deviceSelectors.classList.toggle('show');
+          });
+
+        } catch (error) {
+          console.error('Error initializing SignalWire client:', error);
+          showError('Failed to initialize SignalWire client. Please try again.');
+        }
+      });
+
+      async function loadDevices() {
+        try {
+          // Request permissions first to ensure we get labeled devices
+          await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+          const devices = await navigator.mediaDevices.enumerateDevices();
+
+          const audioInput = document.getElementById('audioInput');
+          const audioOutput = document.getElementById('audioOutput');
+          const videoInput = document.getElementById('videoInput');
+
+          // Clear existing options
+          audioInput.innerHTML = '<option value="">Default Microphone</option>';
+          audioOutput.innerHTML = '<option value="">Default Speaker</option>';
+          videoInput.innerHTML = '<option value="">Default Camera</option>';
+
+          devices.forEach(device => {
+            const option = document.createElement('option');
+            option.value = device.deviceId;
+            option.text = device.label || `${device.kind} (${device.deviceId.slice(0, 5)}...)`;
+
+            if (device.kind === 'audioinput') {
+              audioInput.appendChild(option.cloneNode(true));
+            } else if (device.kind === 'audiooutput') {
+              audioOutput.appendChild(option.cloneNode(true));
+            } else if (device.kind === 'videoinput') {
+              videoInput.appendChild(option.cloneNode(true));
+            }
+          });
+
+          console.log('Devices loaded:', devices);
+
+        } catch (error) {
+          console.error('Error loading devices:', error);
+          showError('Unable to access media devices. Please check your permissions.');
+        }
+      }
+
+      async function updateMediaStream() {
+        const audioInputId = document.getElementById('audioInput').value;
+        const videoInputId = document.getElementById('videoInput').value;
+
+        // Stop all tracks from the current stream before requesting new ones
+        const localVideo = document.getElementById('localVideo');
+        if (localVideo.srcObject) {
+          const tracks = localVideo.srcObject.getTracks();
+          tracks.forEach(track => {
+            track.stop();  // This properly releases the camera
+            track.enabled = false;
+            console.log('Track stopped:', track);
+          });
+          localVideo.srcObject = null;
+          console.log('Local video source object set to null');
+        }
+
+        // Also stop tracks from the current call if it exists
+        if (currentCall && currentCall.localStream) {
+          const callTracks = currentCall.localStream.getTracks();
+          callTracks.forEach(track => {
+            track.stop();
+            track.enabled = false;
+            console.log('Call track stopped:', track);
+          });
+        }
+
+        const constraints = {
+          audio: audioInputId ? {
+            deviceId: { ideal: audioInputId }, // Use 'ideal' instead of 'exact'
+          } : true,
+          video: videoInputId ? {
+            deviceId: { ideal: videoInputId }, // Use 'ideal' instead of 'exact'
+            aspectRatio: { ideal: 16/9 },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          } : {
+            aspectRatio: { ideal: 16/9 },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          }
+        };
+
+        try {
+          const localStream = await navigator.mediaDevices.getUserMedia(constraints);
+          localVideo.srcObject = localStream;
+
+          // If we're in a call, update the call's stream as well
+          if (currentCall) {
+            await currentCall.updateCamera({
+              deviceId: { exact: videoInputId },
+              aspectRatio: 16 / 9,
+              width: { ideal: 1280 },
+              height: { ideal: 720 }
+            });
+          }
+        } catch (error) {
+          console.error('Error updating media stream:', error);
+        }
+      }
+
+      function setLoading(isLoading) {
+        const button = document.getElementById('callButton');
+        const icon = button.querySelector('i');
+        if (isLoading) {
+          button.disabled = true;
+          icon.className = 'fas fa-spinner fa-spin';
+        } else {
+          button.disabled = false;
+          icon.className = 'fas fa-phone';
+        }
+      }
+
+      // Add this new function to clear chat messages
+      function clearChatMessages() {
+        const messagesContainer = document.getElementById('messagesContainer');
+        messagesContainer.innerHTML = ''; // Clear all messages
+      }
+
+      document.getElementById('callButton').addEventListener('click', async () => {
+        setLoading(true);
+        clearError();
+
+        try {
+          const token = document.getElementById('tokenInput').value;
+          if (!token) {
+            showError('Please enter a token');
+            return;
+          }
+
+          document.getElementById('callButton').disabled = true;
+          clearChatMessages();
+
+          const audioInputId = document.getElementById('audioInput').value;
+          const videoInputId = document.getElementById('videoInput').value;
+
+          // More flexible constraints that fall back to default devices if specific ones fail
+          const constraints = {
+            audio: audioInputId ? {
+              deviceId: { ideal: audioInputId }, // Use 'ideal' instead of 'exact'
+            } : true,
+            video: videoInputId ? {
+              deviceId: { ideal: videoInputId }, // Use 'ideal' instead of 'exact'
+              aspectRatio: { ideal: 16/9 },
+              width: { ideal: 1280 },
+              height: { ideal: 720 }
+            } : {
+              aspectRatio: { ideal: 16/9 },
+              width: { ideal: 1280 },
+              height: { ideal: 720 }
+            }
+          };
+
+          let localStream;
+          try {
+            localStream = await navigator.mediaDevices.getUserMedia(constraints);
+          } catch (mediaError) {
+            console.error('Media error:', mediaError);
+            // Fall back to default devices if specific ones fail
+            localStream = await navigator.mediaDevices.getUserMedia({
+              audio: true,
+              video: true
+            });
+            // Refresh device list as the previous ones might be invalid
+            await loadDevices();
+          }
+
+          const localVideo = document.getElementById('localVideo');
+          localVideo.srcObject = localStream;
+          localVideo.style.display = 'block';
+
+          // Get the actual tracks being used
+          const audioTrack = localStream.getAudioTracks()[0];
+          const videoTrack = localStream.getVideoTracks()[0];
+
+          const call = await client.dial({
+            to: document.getElementById('destination').value,
+            rootElement: document.getElementById('rootElement'),
+            userVariables: window._userVariables,
+            video: videoTrack ? {
+              deviceId: { ideal: videoTrack.getSettings().deviceId },
+              aspectRatio: { ideal: 16/9 },
+              width: { ideal: 1280 },
+              height: { ideal: 720 }
+            } : false,
+            audio: audioTrack ? {
+              deviceId: { ideal: audioTrack.getSettings().deviceId }
+            } : false,
+            negotiateVideo: true
+          });
+
+          call.on('stream', (stream) => {
+            currentCall.remoteStream = stream;
+          });
+
+          await call.start();
+          currentCall = call;
+
+          currentCall.on('destroy', () => {
+            console.log('Client destroyed');
+          // Reset UI elements to their initial state as if the call was hung up
+          document.getElementById('callButton').style.display = 'block';
+          document.getElementById('callButton').disabled = false;
+          document.getElementById('hangupButton').style.display = 'none';
+          document.getElementById('muteButton').style.display = 'none';
+
+          // Stop all tracks from the local video stream
+          const localVideo = document.getElementById('localVideo');
+          if (localVideo.srcObject) {
+            const tracks = localVideo.srcObject.getTracks();
+            tracks.forEach(track => {
+              track.stop();  // This properly releases the camera
+              track.enabled = false;
+              console.log('Track stopped:', track);
+            });
+            localVideo.srcObject = null;
+          }
+          localVideo.style.display = 'none';
+
+          currentCall = null;
+          });
+
+          console.log('Call initiated and started:', currentCall);
+
+          document.getElementById('callButton').style.display = 'none';
+          document.getElementById('hangupButton').style.display = 'block';
+          document.getElementById('muteButton').style.display = 'block';
+        } catch (error) {
+          console.error('Error making call:', error);
+          if (error.name === 'OverconstrainedError') {
+            showError('Device selection failed. Please check your camera and microphone settings.');
+          } else {
+            showError('Failed to establish call. Please try again.');
+          }
+          document.getElementById('callButton').disabled = false;
+        } finally {
+          setLoading(false);
+        }
+      });
+
+      document.getElementById('hangupButton').addEventListener('click', async () => {
+        if (currentCall && currentCall.hangup) {
+          try {
+            await currentCall.hangup();
+            console.log('Call ended');
+          } catch (error) {
+            console.error('Error hanging up the call:', error);
+          }
+        } else {
+          console.warn('No active call to hang up');
+        }
+
+        // Stop all tracks from the local video stream
+        const localVideo = document.getElementById('localVideo');
+        if (localVideo.srcObject) {
+          const tracks = localVideo.srcObject.getTracks();
+          tracks.forEach(track => {
+            track.stop();  // This properly releases the camera
+            track.enabled = false;
+            console.log('Track stopped:', track);
+          });
+          localVideo.srcObject = null;
+        }
+        localVideo.style.display = 'none';
+
+        currentCall = null;
+        document.getElementById('callButton').style.display = 'block';
+        document.getElementById('callButton').disabled = false;
+        document.getElementById('hangupButton').style.display = 'none';
+        document.getElementById('muteButton').style.display = 'none';
+      });
+
+      function handleIncomingCall(notification) {
+        console.log('Incoming call:', notification);
+        notification.invite.accept({
+          rootElement: document.getElementById('rootElement'),
+        }).then(call => {
+          currentCall = call;
+          console.log('Call accepted:', call);
+          document.getElementById('hangupButton').style.display = 'block';
+        }).catch(error => {
+          console.error('Error accepting call:', error);
+        });
+      }
+
+      function cleanupCallListeners() {
+        if (currentCall) {
+          currentCall = null;
+        }
+      }
+
+      // Add this new function to handle message display
+      function appendMessage(text, sender) {
+        const messagesContainer = document.getElementById('messagesContainer');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+        messageDiv.textContent = text;
+        messagesContainer.appendChild(messageDiv);
+
+        // Ensure the chat box scrolls to the bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+
+      window.addEventListener('beforeunload', async (event) => {
+        if (currentCall && currentCall.hangup) {
+          try {
+            await currentCall.hangup();
+            console.log('Call ended due to page reload');
+          } catch (error) {
+            console.error('Error hanging up the call on page reload:', error);
+          }
+        }
+      });
+
+      // Add device change listener
+      navigator.mediaDevices.addEventListener('devicechange', async () => {
+        console.log('Devices changed, reloading device list...');
+        await loadDevices();
+      });
+
+      document.getElementById('muteButton').addEventListener('click', () => {
+        const muteButton = document.getElementById('muteButton');
+        const icon = muteButton.querySelector('i');
+        
+        if (localVideo.srcObject) {
+          const audioTrack = localVideo.srcObject.getAudioTracks()[0];
+          if (audioTrack) {
+            audioTrack.enabled = !audioTrack.enabled;
+            
+            // Update button appearance
+            if (!audioTrack.enabled) {
+              muteButton.classList.add('muted');
+              icon.className = 'fas fa-microphone-slash';
+            } else {
+              muteButton.classList.remove('muted');
+              icon.className = 'fas fa-microphone';
+            }
+          }
+        }
+
+        // If in a call, also mute the call audio
+        if (currentCall && currentCall.localStream) {
+          const callAudioTrack = currentCall.localStream.getAudioTracks()[0];
+          if (callAudioTrack) {
+            callAudioTrack.enabled = !callAudioTrack.enabled;
+          }
+        }
+      });
+
+      // Add this to your transitionToHangupState function to reset mute state
+      function transitionToHangupState() {
+        // ... existing code ...
+
+        // Reset mute button state
+        const muteButton = document.getElementById('muteButton');
+        const icon = muteButton.querySelector('i');
+        muteButton.classList.remove('muted');
+        icon.className = 'fas fa-microphone';
+
+        // ... rest of existing code ...
+      }
+
+      // Initialize mute button as hidden when the page loads
+      document.addEventListener('DOMContentLoaded', () => {
+        // ... existing code ...
+        document.getElementById('muteButton').style.display = 'none';
+      });
+    </script>
+  </body>
+
+</html>
