@@ -3,6 +3,7 @@ bot/sigmond_tarot.log
 bot/sigmond_tarot.pid
 bot/*.log
 bot/*.pid
+bot/nohup.out
 
 # Python
 __pycache__/
@@ -18,7 +19,8 @@ venv/
 *~
 *.swp
 *.swo
-*#
+\#*\#
+.\#*
 
 # OS files
 .DS_Store

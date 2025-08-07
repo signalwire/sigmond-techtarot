@@ -20,31 +20,67 @@ This application combines SignalWire's AI Agent technology with WebRTC video cal
 
 ```
 tarot/
-├── signalwire-agents/     # Bot implementation
-│   └── sigmond_tarot.py   # Main AI agent
-├── web/                   # Web interface
-│   ├── client/            # Frontend application
-│   │   ├── index.html     # Main UI
-│   │   ├── app.js         # JavaScript logic
-│   │   └── signalwire.js  # SignalWire SDK
-│   ├── card_images/       # Tarot card images
-│   │   ├── Major/         # Major Arcana cards
+├── bot/                        # Bot implementation
+│   ├── sigmond_tarot_steps.py # Main AI agent
+│   ├── bot.sh                  # Control script for starting/stopping
+│   └── signalwire_ai_knowledge_prompt.md # SignalWire knowledge base
+├── web/                        # Web interface and media files
+│   ├── client/                 # Frontend application
+│   │   ├── index.html          # Main UI
+│   │   ├── app.js              # JavaScript logic
+│   │   └── signalwire.js       # SignalWire SDK
+│   ├── card_images/            # Tarot card images
+│   │   ├── Major/              # Major Arcana cards
 │   │   ├── CloudDevelopers/
 │   │   ├── Docker/
 │   │   ├── FreeSWITCHDevs/
 │   │   ├── Linux/
-│   │   └── tarot_back.jpg # Card back design
-│   └── tarot_deck.json    # Card definitions and meanings
-└── README.md              # This file
+│   │   └── tarot_back.jpg      # Card back design
+│   ├── tarot_deck.json         # Card definitions and meanings
+│   ├── sigmond_tarot_idle.mp4  # Dealer idle video
+│   ├── sigmond_tarot_talking.mp4 # Dealer talking video
+│   └── bgmusic.mp3             # Background music
+└── README.md                   # This file
 ```
 
 ## Setup
+
+### Environment Variables
+
+**Required**:
+- `TAROT_WEB_ROOT`: URL where tarot media files are hosted (e.g., `https://your-domain.com/path/to/tarot`)
+
+**Optional**:
+- `TAROT_POST_PROMPT_URL`: URL for post-prompt webhook (if you want conversation summaries)
+- `SWML_DEV_USERNAME`: Basic auth username (defaults to auto-generated)
+- `SWML_DEV_PASSWORD`: Basic auth password (defaults to auto-generated)
+
+### Running with HTTPS
+
+To run the bot with HTTPS enabled, set the following environment variables:
+
+```bash
+export SWML_SSL_ENABLED=true
+export SWML_SSL_CERT_PATH=/path/to/cert.pem
+export SWML_SSL_KEY_PATH=/path/to/key.pem
+export SWML_DOMAIN=yourdomain.com
+```
+
+The SignalWire Agents SDK provides comprehensive security features including:
+- SSL/TLS encryption
+- Basic authentication (enabled by default)
+- HSTS headers
+- CORS configuration
+- Rate limiting
+- Request size limits
+
+For complete security configuration options, see the [SignalWire Agents Security Documentation](https://github.com/signalwire/signalwire-agents/blob/main/docs/security.md).
 
 ### Bot Setup
 
 1. Navigate to the bot directory:
    ```bash
-   cd signalwire-agents
+   cd bot
    ```
 
 2. Install dependencies:
@@ -52,9 +88,31 @@ tarot/
    pip install signalwire-agents
    ```
 
-3. Run Sigmond:
+3. Set required environment variable:
    ```bash
-   python sigmond_tarot.py --port 3000
+   export TAROT_WEB_ROOT="https://your-domain.com/path/to/tarot"
+   ```
+
+4. Run Sigmond using the control script:
+   ```bash
+   ./bot.sh start    # Start Sigmond on default port
+   ./bot.sh restart  # Restart Sigmond
+   ./bot.sh status   # Check if Sigmond is running
+   ./bot.sh logs     # View logs
+   ./bot.sh stop     # Stop Sigmond
+   ```
+
+   Or run directly:
+   ```bash
+   # HTTP mode (default)
+   python sigmond_tarot_steps.py --port 3000
+   
+   # HTTPS mode
+   export SWML_SSL_ENABLED=true
+   export SWML_SSL_CERT_PATH=/path/to/cert.pem
+   export SWML_SSL_KEY_PATH=/path/to/key.pem
+   export SWML_DOMAIN=yourdomain.com
+   python sigmond_tarot_steps.py --port 3000
    ```
 
 ### Web Interface Setup
@@ -99,8 +157,9 @@ Each card includes upright and reversed meanings tailored to technology themes.
 ## Configuration
 
 - **Bot Port**: Configure with `--port` flag (default: 3000)
-- **Base URL**: Update `BASE_URL` in app.js for card image paths
+- **SignalWire Token**: Update `STATIC_TOKEN` in app.js
 - **Destination**: Update `DESTINATION` in app.js for SignalWire routing
+- **Card Images**: Uses relative paths (../card_images from client directory)
 
 ## Features in Detail
 
@@ -127,3 +186,11 @@ Each card includes upright and reversed meanings tailored to technology themes.
 - **Voice**: ElevenLabs Adam voice for natural speech
 - **SWML**: SignalWire Markup Language for user events
 - **Frontend**: Vanilla JavaScript with responsive CSS
+
+## Learning Resources
+
+For more information on SignalWire technologies:
+- [SignalWire Agents SDK (GitHub)](https://github.com/signalwire/signalwire-agents) - Python SDK for building AI agents
+- [SignalWire AI Documentation](https://developer.signalwire.com/ai/) - AI Agent guides and tutorials
+- [SWML Documentation](https://developer.signalwire.com/swml/) - SignalWire Markup Language reference
+- [Browser SDK Documentation](https://developer.signalwire.com/sdks/browser-sdk/) - JavaScript SDK for WebRTC

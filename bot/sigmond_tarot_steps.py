@@ -192,20 +192,29 @@ class SigmondTarotReader(AgentBase):
             "read my tarot"
         ])
         
+        # Get the web root from environment variable (required)
+        web_root = os.environ.get("TAROT_WEB_ROOT")
+        if not web_root:
+            raise ValueError("TAROT_WEB_ROOT environment variable is required. Set it to the URL where your tarot media files are hosted.")
+        
         # Set conversation parameters
         self.set_params({
-            "video_talking_file": "https://tatooine.cantina.cloud/devuser/tarot/sigmond_tarot_talking.mp4",
-            "video_idle_file": "https://tatooine.cantina.cloud/devuser/tarot/sigmond_tarot_idle.mp4",
+            "video_talking_file": f"{web_root}/sigmond_tarot_talking.mp4",
+            "video_idle_file": f"{web_root}/sigmond_tarot_idle.mp4",
             "vad_config": "75",
             "end_of_speech_timeout": 300,
             "max_response_tokens": 500,
             "enable_vision": True,
             #"audible_latency": True
-            "background_file": "https://tatooine.cantina.cloud/devuser/tarot/bgmusic.mp3"
+            "background_file": f"{web_root}/bgmusic.mp3"
         })
 
         self.set_post_prompt("Summarize the conversation, including all the details about the tarot reading.") 
-        self.set_post_prompt_url("https://NiheyBNy7sDgpyon:zmj2tuhsTyOwis6S@botworks-prod.signalwire.me/postprompt/1")
+        
+        # Optional post-prompt URL from environment
+        post_prompt_url = os.environ.get("TAROT_POST_PROMPT_URL")
+        if post_prompt_url:
+            self.set_post_prompt_url(post_prompt_url)
         
         # Add context about the reading
         self.set_global_data({
