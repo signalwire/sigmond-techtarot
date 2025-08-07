@@ -209,6 +209,12 @@ class SigmondTarotReader(AgentBase):
             "background_file": f"{web_root}/bgmusic.mp3"
         })
 
+        # Optional post-prompt URL from environment
+        post_prompt_url = os.environ.get("TAROT_POST_PROMPT_URL")
+        if post_prompt_url:
+            self.set_post_prompt("Summarize the conversation, including all the details about the tarot reading.")             
+            self.set_post_prompt_url(post_prompt_url)
+        
         # Add context about the reading
         self.set_global_data({
             "assistant_name": "Sigmond",
