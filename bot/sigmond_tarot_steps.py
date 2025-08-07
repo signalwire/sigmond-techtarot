@@ -200,6 +200,7 @@ class SigmondTarotReader(AgentBase):
             "end_of_speech_timeout": 300,
             "max_response_tokens": 500,
             "enable_vision": True,
+            #"audible_latency": True
             "background_file": "https://tatooine.cantina.cloud/devuser/tarot/bgmusic.mp3"
         })
 

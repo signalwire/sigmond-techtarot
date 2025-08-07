@@ -123,6 +123,19 @@ async function connectToCall() {
             }
             return originalEmit.apply(this, [event, ...args]);
         };
+        
+        // Client-level disconnect handling
+        client.on('signalwire.disconnect', (params) => {
+            logEvent('Client disconnected', params);
+            handleDisconnect();
+        });
+        
+        client.on('signalwire.error', (params) => {
+            logEvent('Client error', params);
+            if (params && params.error && params.error.includes('disconnect')) {
+                handleDisconnect();
+            }
+        });
 
         // Try multiple event patterns
         client.on('user_event', (params) => {
@@ -148,22 +161,80 @@ async function connectToCall() {
             }
         });
 
-        statusDiv.textContent = 'Dialing...';
+        statusDiv.textContent = 'Getting media devices...';
         
-        // Dial into the room
-        roomSession = await client.dial({
-            to: DESTINATION,
-            rootElement: document.getElementById('video-container'),
-            audio: true,
-            video: true,
-            negotiateVideo: true,
-            userVariables: {
-                userName: 'Tarot Reader',
-                interface: 'raw-sdk-static',
-                timestamp: new Date().toISOString(),
-                extension: 'sigmond_tarot'
+        // First get permission to access devices to see their labels
+        try {
+            // Request permission to get device labels
+            const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+            tempStream.getTracks().forEach(track => track.stop()); // Stop the temp stream
+            
+            // Now enumerate devices with labels
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const audioInputs = devices.filter(d => d.kind === 'audioinput');
+            const videoInputs = devices.filter(d => d.kind === 'videoinput');
+            
+            // Find the default devices - on macOS, they often have "Default" in the label
+            let audioDeviceId = undefined;
+            let videoDeviceId = undefined;
+            
+            // Look for devices with "Default" in the label first
+            const defaultAudio = audioInputs.find(d => d.label.toLowerCase().includes('default'));
+            const defaultVideo = videoInputs.find(d => d.label.toLowerCase().includes('default'));
+            
+            if (defaultAudio) {
+                audioDeviceId = defaultAudio.deviceId;
+                logEvent('Found default audio device', { label: defaultAudio.label, deviceId: defaultAudio.deviceId });
+            } else if (audioInputs.length > 0) {
+                // If no "default" device, use the first one
+                audioDeviceId = audioInputs[0].deviceId;
+                logEvent('Using first audio device', { label: audioInputs[0].label, deviceId: audioInputs[0].deviceId });
             }
-        });
+            
+            if (defaultVideo) {
+                videoDeviceId = defaultVideo.deviceId;
+                logEvent('Found default video device', { label: defaultVideo.label, deviceId: defaultVideo.deviceId });
+            } else if (videoInputs.length > 0) {
+                // If no "default" device, use the first one
+                videoDeviceId = videoInputs[0].deviceId;
+                logEvent('Using first video device', { label: videoInputs[0].label, deviceId: videoInputs[0].deviceId });
+            }
+            
+            statusDiv.textContent = 'Dialing...';
+            
+            // Dial into the room with specific devices
+            roomSession = await client.dial({
+                to: DESTINATION,
+                rootElement: document.getElementById('video-container'),
+                audio: audioDeviceId ? { deviceId: { exact: audioDeviceId } } : true,
+                video: videoDeviceId ? { deviceId: { exact: videoDeviceId } } : true,
+                negotiateVideo: true,
+                userVariables: {
+                    userName: 'Tarot Reader',
+                    interface: 'raw-sdk-static',
+                    timestamp: new Date().toISOString(),
+                    extension: 'sigmond_tarot'
+                }
+            });
+        } catch (error) {
+            logEvent('Error getting devices', { error: error.message });
+            statusDiv.textContent = 'Dialing with browser defaults...';
+            
+            // Fallback to letting browser choose
+            roomSession = await client.dial({
+                to: DESTINATION,
+                rootElement: document.getElementById('video-container'),
+                audio: true,
+                video: true,
+                negotiateVideo: true,
+                userVariables: {
+                    userName: 'Tarot Reader',
+                    interface: 'raw-sdk-static',
+                    timestamp: new Date().toISOString(),
+                    extension: 'sigmond_tarot'
+                }
+            });
+        }
 
         logEvent('Dial initiated');
 
@@ -193,7 +264,42 @@ async function connectToCall() {
                 const localStreamClone = roomSession.localStream.clone();
                 localVideo.srcObject = localStreamClone;
                 localVideoContainer.style.display = 'block';
+                
+                // Log video device being used
+                const videoTracks = roomSession.localStream.getVideoTracks();
+                videoTracks.forEach(track => {
+                    const settings = track.getSettings();
+                    logEvent('Video input device', {
+                        label: track.label,
+                        deviceId: settings.deviceId,
+                        width: settings.width,
+                        height: settings.height,
+                        frameRate: settings.frameRate
+                    });
+                });
+                
                 logEvent('Local video preview started');
+            }
+            
+            // Log audio output device (system will use OS default automatically)
+            const videoElement = document.querySelector('#video-container video');
+            if (videoElement && typeof videoElement.setSinkId === 'function') {
+                // Log current audio output device
+                navigator.mediaDevices.enumerateDevices()
+                    .then(devices => {
+                        const audioOutputs = devices.filter(device => device.kind === 'audiooutput');
+                        
+                        // The current sinkId will show which device is being used
+                        const currentOutput = audioOutputs.find(device => device.deviceId === videoElement.sinkId);
+                        
+                        logEvent('Audio output device', {
+                            count: audioOutputs.length,
+                            currentDevice: currentOutput ? currentOutput.label : 'System Default',
+                            sinkId: videoElement.sinkId || 'default'
+                        });
+                    });
+            } else {
+                logEvent('setSinkId not supported - using browser default audio output');
             }
         });
 
@@ -214,6 +320,45 @@ async function connectToCall() {
             logEvent('destroy', params);
             handleDisconnect();
         });
+        
+        // Additional events for remote hangup detection
+        roomSession.on('call.ended', (params) => {
+            logEvent('call.ended', params);
+            handleDisconnect();
+        });
+        
+        roomSession.on('room.ended', (params) => {
+            logEvent('room.ended', params);
+            handleDisconnect();
+        });
+        
+        roomSession.on('disconnected', (params) => {
+            logEvent('disconnected', params);
+            handleDisconnect();
+        });
+        
+        // Additional events that might fire on remote hangup
+        roomSession.on('call.state', (params) => {
+            logEvent('call.state', params);
+            if (params && (params.state === 'ended' || params.state === 'disconnected')) {
+                handleDisconnect();
+            }
+        });
+        
+        roomSession.on('session.ended', (params) => {
+            logEvent('session.ended', params);
+            handleDisconnect();
+        });
+        
+        roomSession.on('member.updated', (params) => {
+            if (params && params.member && params.member.state === 'left') {
+                logEvent('member.updated - member left', params);
+                // Check if this is the remote party leaving
+                if (params.member.id !== roomSession.memberId) {
+                    handleDisconnect();
+                }
+            }
+        });
 
         // Watch for when localStream becomes available
         const checkLocalStream = setInterval(() => {
@@ -223,17 +368,77 @@ async function connectToCall() {
                 
                 const audioTracks = roomSession.localStream.getAudioTracks();
                 
-                // Disable AGC on audio tracks
+                // Apply gain to the audio stream
+                if (audioTracks.length > 0) {
+                    try {
+                        // Create audio context and gain node
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const source = audioContext.createMediaStreamSource(roomSession.localStream);
+                        const gainNode = audioContext.createGain();
+                        const destination = audioContext.createMediaStreamDestination();
+                        
+                        // Set gain value (1.0 = no change, 2.0 = double volume, etc.)
+                        const gainValue = 3.0; // Adjust this value to control gain
+                        gainNode.gain.value = gainValue;
+                        
+                        // Connect the nodes
+                        source.connect(gainNode);
+                        gainNode.connect(destination);
+                        
+                        // Replace the audio track in the stream
+                        const enhancedStream = new MediaStream();
+                        const videoTracks = roomSession.localStream.getVideoTracks();
+                        const enhancedAudioTrack = destination.stream.getAudioTracks()[0];
+                        
+                        // Add the enhanced audio track
+                        enhancedStream.addTrack(enhancedAudioTrack);
+                        
+                        // Add video tracks if any
+                        videoTracks.forEach(track => {
+                            enhancedStream.addTrack(track);
+                        });
+                        
+                        // Update the room session's local stream
+                        // Note: This might not work with all WebRTC implementations
+                        // If it doesn't work, you may need to set up gain before calling dial()
+                        
+                        logEvent('Applied audio gain', { gain: gainValue });
+                    } catch (err) {
+                        logEvent('Failed to apply audio gain', { error: err.message });
+                    }
+                }
+                
+                // Disable AGC and noise suppression on audio tracks
                 audioTracks.forEach(track => {
-                    // Apply constraints to disable AGC
+                    // Log the audio device being used
+                    const settings = track.getSettings();
+                    
+                    // Get device info to show if it's the default
+                    navigator.mediaDevices.enumerateDevices().then(devices => {
+                        const audioInputs = devices.filter(d => d.kind === 'audioinput');
+                        const currentDevice = audioInputs.find(d => d.deviceId === settings.deviceId);
+                        const isDefault = settings.deviceId === 'default' || 
+                                        (currentDevice && currentDevice.deviceId === 'default');
+                        
+                        logEvent('Audio input device', {
+                            label: track.label,
+                            deviceId: settings.deviceId,
+                            isSystemDefault: isDefault,
+                            groupId: settings.groupId,
+                            sampleRate: settings.sampleRate,
+                            channelCount: settings.channelCount
+                        });
+                    });
+                    
+                    // Apply constraints to disable AGC and noise suppression
                     track.applyConstraints({
                         autoGainControl: false,
                         echoCancellation: true,
-                        noiseSuppression: true
+                        noiseSuppression: false
                     }).then(() => {
-                        logEvent(`Disabled AGC on audio track: ${track.label}`);
+                        logEvent(`Disabled AGC and noise suppression on audio track: ${track.label}`);
                     }).catch(err => {
-                        logEvent(`Failed to disable AGC: ${err.message}`);
+                        logEvent(`Failed to disable AGC/noise suppression: ${err.message}`);
                     });
                 });
                 
@@ -311,6 +516,25 @@ function handleDisconnect() {
     }
     if (localVideoContainer) {
         localVideoContainer.style.display = 'none';
+    }
+    
+    // Clean up remote video element if it exists
+    const videoContainer = document.getElementById('video-container');
+    if (videoContainer) {
+        // Remove any video elements that SignalWire might have added
+        const videos = videoContainer.querySelectorAll('video');
+        videos.forEach(video => {
+            if (video.srcObject) {
+                const tracks = video.srcObject.getTracks();
+                tracks.forEach(track => track.stop());
+                video.srcObject = null;
+            }
+            video.remove();
+        });
+        
+        // Also remove any wrapper divs SignalWire might have added
+        videoContainer.innerHTML = '';
+        logEvent('Cleaned up remote video elements');
     }
     
     // Clean up client
