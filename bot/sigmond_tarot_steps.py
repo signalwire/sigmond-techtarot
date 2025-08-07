@@ -203,7 +203,7 @@ class SigmondTarotReader(AgentBase):
             "video_idle_file": f"{web_root}/sigmond_tarot_idle.mp4",
             "vad_config": "75",
             "end_of_speech_timeout": 300,
-            "max_response_tokens": 500,
+            "max_response_tokens": 3196,
             "enable_vision": True,
             #"audible_latency": True
             "background_file": f"{web_root}/bgmusic.mp3"
