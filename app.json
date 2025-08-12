@@ -1,0 +1,25 @@
+{
+  "name": "SignalWire TechTarot",
+  "description": "AI-powered mystical tarot reading with tech-themed cards",
+  "repository": "https://github.com/signalwire/sigmond-techtarot",
+  "keywords": ["signalwire", "ai", "tarot", "webrtc", "python"],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "env": {
+    "TAROT_WEB_ROOT": {
+      "description": "URL where media files are hosted (optional, defaults to local server)",
+      "required": false
+    },
+    "SWML_DEV_USERNAME": {
+      "description": "Basic auth username for API endpoints (auto-generated if not set)",
+      "required": false
+    },
+    "SWML_DEV_PASSWORD": {
+      "description": "Basic auth password for API endpoints (auto-generated if not set)",
+      "required": false
+    }
+  }
+}

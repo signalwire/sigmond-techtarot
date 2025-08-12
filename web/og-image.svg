@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <!-- Mystical gradient background -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#16213e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f3460;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="glowGradient" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#6b46c1;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#6b46c1;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Mystical glow effect -->
+  <ellipse cx="600" cy="315" rx="400" ry="200" fill="url(#glowGradient)"/>
+  
+  <!-- Tarot cards visualization -->
+  <!-- Past card -->
+  <g transform="translate(300, 200)">
+    <rect x="0" y="0" width="120" height="180" rx="8" fill="#2a2a4a" stroke="#FFD700" stroke-width="2"/>
+    <text x="60" y="100" font-family="Georgia, serif" font-size="64" fill="#FFD700" text-anchor="middle">☽</text>
+    <text x="60" y="160" font-family="Arial, sans-serif" font-size="16" fill="#FFD700" text-anchor="middle">PAST</text>
+  </g>
+  
+  <!-- Present card (center, elevated) -->
+  <g transform="translate(540, 180)">
+    <rect x="0" y="0" width="120" height="180" rx="8" fill="#3a3a5a" stroke="#FFD700" stroke-width="3"/>
+    <text x="60" y="100" font-family="Georgia, serif" font-size="64" fill="#FFD700" text-anchor="middle">✦</text>
+    <text x="60" y="160" font-family="Arial, sans-serif" font-size="16" fill="#FFD700" text-anchor="middle">PRESENT</text>
+  </g>
+  
+  <!-- Future card -->
+  <g transform="translate(780, 200)">
+    <rect x="0" y="0" width="120" height="180" rx="8" fill="#2a2a4a" stroke="#FFD700" stroke-width="2"/>
+    <text x="60" y="100" font-family="Georgia, serif" font-size="64" fill="#FFD700" text-anchor="middle">☀</text>
+    <text x="60" y="160" font-family="Arial, sans-serif" font-size="16" fill="#FFD700" text-anchor="middle">FUTURE</text>
+  </g>
+  
+  <!-- Title Text -->
+  <text x="600" y="100" font-family="Georgia, serif" font-size="72" font-weight="bold" fill="#FFD700" text-anchor="middle">SignalWire</text>
+  <text x="600" y="140" font-family="Georgia, serif" font-size="56" fill="white" text-anchor="middle">TechTarot</text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="460" font-family="Arial, sans-serif" font-size="28" fill="#FFD700" text-anchor="middle">Mystical AI Fortune Telling</text>
+  <text x="600" y="500" font-family="Arial, sans-serif" font-size="24" fill="rgba(255,255,255,0.8)" text-anchor="middle">Where Ancient Wisdom Meets Modern Technology</text>
+  
+  <!-- Decorative elements - mystical symbols -->
+  <text x="200" y="150" font-family="Georgia" font-size="40" fill="#6b46c1" opacity="0.6">✧</text>
+  <text x="1000" y="150" font-family="Georgia" font-size="40" fill="#6b46c1" opacity="0.6">✧</text>
+  <text x="150" y="480" font-family="Georgia" font-size="40" fill="#6b46c1" opacity="0.6">⋆</text>
+  <text x="1050" y="480" font-family="Georgia" font-size="40" fill="#6b46c1" opacity="0.6">⋆</text>
+  
+  <!-- Crystal ball icon -->
+  <circle cx="600" cy="550" r="25" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.5"/>
+  <circle cx="600" cy="550" r="20" fill="rgba(107,70,193,0.2)"/>
+</svg>

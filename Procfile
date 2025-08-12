@@ -1,0 +1,1 @@
+web: python bot/sigmond_tarot_steps.py --port ${PORT:-5000}

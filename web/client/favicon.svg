@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Mystical purple gradient background -->
+  <defs>
+    <radialGradient id="mysticalGradient" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#6b46c1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1a2e;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="30" fill="url(#mysticalGradient)"/>
+  
+  <!-- Crystal ball -->
+  <circle cx="32" cy="28" r="18" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.9"/>
+  <circle cx="32" cy="28" r="16" fill="rgba(255, 255, 255, 0.1)"/>
+  
+  <!-- Mystical sparkles/stars -->
+  <text x="32" y="35" font-family="Arial" font-size="20" fill="#FFD700" text-anchor="middle">✦</text>
+  
+  <!-- Base of crystal ball -->
+  <ellipse cx="32" cy="48" rx="12" ry="4" fill="#FFD700"/>
+  <rect x="26" y="44" width="12" height="6" fill="#FFD700"/>
+</svg>
