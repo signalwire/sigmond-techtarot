@@ -74,6 +74,11 @@ async function initializeClient() {
 // Connect to call with static token
 async function connectToCall() {
     try {
+        // Disable button and show connecting state
+        connectBtn.disabled = true;
+        connectBtn.textContent = '⏳ Connecting...';
+        connectBtn.style.cssText = 'background: linear-gradient(45deg, #808080, #606060) !important;';
+        
         // Clear previous event log entries
         eventEntries.innerHTML = '';
         logEvent('Starting new connection...');
@@ -505,6 +510,10 @@ async function connectToCall() {
     } catch (error) {
         logEvent('Connection error', { error: error.message, stack: error.stack });
         statusDiv.textContent = 'Connection failed';
+        // Reset connect button
+        connectBtn.disabled = false;
+        connectBtn.textContent = 'Connect';
+        connectBtn.style.cssText = ''; // Clear all inline styles
         connectBtn.style.display = 'inline-block';
         hangupBtn.style.display = 'none';
     }
@@ -556,6 +565,10 @@ function handleDisconnect() {
     }
     roomSession = null;
     statusDiv.textContent = 'Disconnected';
+    // Reset connect button
+    connectBtn.disabled = false;
+    connectBtn.textContent = 'Connect';
+    connectBtn.style.cssText = ''; // Clear all inline styles
     connectBtn.style.display = 'inline-block';
     hangupBtn.style.display = 'none';
     muteBtn.style.display = 'none';
