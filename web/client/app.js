@@ -250,6 +250,18 @@ async function connectToCall() {
             hangupBtn.style.display = 'inline-block';
             muteBtn.style.display = 'inline-block';
             
+            // Add connected class to shrink controls on mobile
+            const controlPanel = document.getElementById('control-panel');
+            if (controlPanel) {
+                controlPanel.classList.add('connected');
+            }
+            
+            // Make buttons ultra compact on mobile
+            if (window.innerWidth <= 768) {
+                hangupBtn.textContent = '✕';
+                muteBtn.textContent = '🔇';
+            }
+            
             // Hide the deck placeholder
             const deckPlaceholder = document.getElementById('deck-placeholder');
             if (deckPlaceholder) {
@@ -551,6 +563,16 @@ function handleDisconnect() {
     isMuted = false;
     clearCards();
     
+    // Remove connected class to restore normal size
+    const controlPanel = document.getElementById('control-panel');
+    if (controlPanel) {
+        controlPanel.classList.remove('connected');
+    }
+    
+    // Restore button text
+    hangupBtn.textContent = 'Leave';
+    muteBtn.textContent = 'Mute';
+    
     // Show the deck placeholder again
     const deckPlaceholder = document.getElementById('deck-placeholder');
     if (deckPlaceholder) {
@@ -736,7 +758,11 @@ function toggleMute() {
             // Update UI based on first track state
             if (audioTracks.length > 0) {
                 isMuted = !audioTracks[0].enabled;
-                muteBtn.textContent = isMuted ? 'Unmute' : 'Mute';
+                if (window.innerWidth <= 768 && document.getElementById('control-panel').classList.contains('connected')) {
+                    muteBtn.textContent = isMuted ? '🔊' : '🔇';
+                } else {
+                    muteBtn.textContent = isMuted ? 'Unmute' : 'Mute';
+                }
                 logEvent(isMuted ? 'Microphone muted' : 'Microphone unmuted');
             }
         } else {

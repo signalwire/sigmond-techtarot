@@ -66,17 +66,40 @@
         /* Control Panel */
         #control-panel {
             position: fixed;
-            top: 10px;
-            right: 10px;
-            left: 10px;
+            bottom: 20px;
+            right: 20px;
             background: rgba(0, 0, 0, 0.9);
             padding: 10px;
             border-radius: 10px;
             z-index: 1000;
             border: 1px solid #d4af37;
             backdrop-filter: blur(5px);
-            max-width: 400px;
-            margin: 0 auto;
+            max-width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        #control-panel.connected {
+            padding: 3px;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            opacity: 0.85;
+            border-radius: 20px;
+        }
+
+        #control-panel.connected button {
+            padding: 3px 6px;
+            font-size: 10px;
+            min-width: 35px;
+            margin: 1px;
+            border-radius: 12px;
+        }
+
+        #control-panel.connected .checkbox-container,
+        #control-panel.connected #status,
+        #control-panel.connected #local-video-container,
+        #control-panel.connected > div:not(:first-child) {
+            display: none;
         }
 
         #control-panel button {
@@ -464,10 +487,24 @@
             }
 
             #control-panel {
-                top: 5px;
-                left: 5px;
-                right: 5px;
+                bottom: 10px;
+                right: 10px;
                 padding: 8px;
+                max-width: 250px;
+            }
+            
+            #control-panel.connected {
+                padding: 2px;
+                bottom: 5px;
+                right: 5px;
+                max-width: none;
+                opacity: 0.75;
+            }
+            
+            #control-panel.connected button {
+                padding: 2px 5px;
+                font-size: 9px;
+                min-width: 28px;
             }
 
             #control-panel button {
@@ -553,10 +590,9 @@
             }
 
             #control-panel {
-                top: 5px;
-                right: 5px;
-                left: auto;
-                max-width: 300px;
+                bottom: 10px;
+                right: 10px;
+                max-width: 280px;
             }
 
             #cards-area {
@@ -616,8 +652,8 @@
 
     <!-- Control panel floats over everything -->
     <div id="control-panel">
-        <button id="connectBtn">Connect to Sigmond</button>
-        <button id="hangupBtn" style="display: none;">Hang Up</button>
+        <button id="connectBtn">Connect</button>
+        <button id="hangupBtn" style="display: none;">Leave</button>
         <button id="muteBtn" style="display: none;">Mute</button>
         <div style="margin-top: 10px;">
             <label style="color: #d4af37; font-size: 14px; margin-right: 15px;">
