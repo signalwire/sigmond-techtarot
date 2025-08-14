@@ -47,6 +47,7 @@
         html, body {
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
         }
 
         body {
@@ -58,9 +59,8 @@
             background-attachment: fixed;
             background-size: cover;
             color: #eee;
-            height: 100vh;
+            min-height: 100vh;
             position: relative;
-            overflow: hidden;
         }
 
         /* Control Panel */
@@ -68,25 +68,29 @@
             position: fixed;
             top: 10px;
             right: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 15px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 10px;
             border-radius: 10px;
-            z-index: 10;  /* Higher z-index to float on top */
+            z-index: 1000;
             border: 1px solid #d4af37;
             backdrop-filter: blur(5px);
+            max-width: 400px;
+            margin: 0 auto;
         }
 
         #control-panel button {
             background: #d4af37;
             border: none;
             color: #1a1a2e;
-            padding: 10px 20px;
-            margin: 0 5px;
+            padding: 8px 16px;
+            margin: 3px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: clamp(14px, 2vw, 16px);
             font-weight: bold;
             transition: all 0.3s;
+            min-width: 80px;
         }
 
         #control-panel button:hover:not(:disabled) {
@@ -402,6 +406,7 @@
             transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             max-width: 1280px;
             margin: 0 auto;
+            min-height: 300px;
         }
         
         /* SignalWire may add a wrapper div */
@@ -449,6 +454,150 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            :root {
+                --card-area-height: 35vh;
+                --video-area-height-with-cards: 65vh;
+            }
+
+            #control-panel {
+                top: 5px;
+                left: 5px;
+                right: 5px;
+                padding: 8px;
+            }
+
+            #control-panel button {
+                padding: 6px 12px;
+                margin: 2px;
+                font-size: 14px;
+                min-width: 70px;
+            }
+
+            #local-video-container {
+                width: 120px;
+                height: 90px;
+                margin-top: 10px;
+            }
+
+            #status {
+                font-size: 12px;
+                margin-top: 8px;
+            }
+
+            .checkbox-container {
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            #cards-area {
+                padding: 10px;
+                bottom: 5px;
+            }
+
+            .card-container {
+                width: 90px;
+                height: 135px;
+            }
+
+            .card-position {
+                padding: 2px 5px;
+                font-size: 10px;
+            }
+
+            .card-name {
+                font-size: 12px;
+                padding: 0 3px;
+            }
+
+            #video-container {
+                min-height: 250px;
+            }
+
+            /* Stack cards vertically on very small screens */
+            @media (max-width: 480px) {
+                #cards-area {
+                    height: auto;
+                    max-height: 50vh;
+                    overflow-y: auto;
+                }
+
+                .cards-wrapper {
+                    flex-direction: column;
+                    gap: 10px;
+                    padding: 10px;
+                }
+
+                .card-container {
+                    width: 120px;
+                    height: 180px;
+                    position: relative !important;
+                    transform: none !important;
+                }
+
+                .card-position {
+                    position: static;
+                    margin-bottom: 5px;
+                }
+            }
+        }
+
+        /* Landscape orientation adjustments */
+        @media (max-width: 768px) and (orientation: landscape) {
+            :root {
+                --card-area-height: 45vh;
+                --video-area-height-with-cards: 55vh;
+            }
+
+            #control-panel {
+                top: 5px;
+                right: 5px;
+                left: auto;
+                max-width: 300px;
+            }
+
+            #cards-area {
+                height: 45vh;
+            }
+
+            .card-container {
+                width: 80px;
+                height: 120px;
+            }
+
+            #video-container {
+                min-height: 200px;
+            }
+        }
+
+        /* Tablet adjustments */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .card-container {
+                width: 110px;
+                height: 165px;
+            }
+
+            #control-panel {
+                max-width: 350px;
+                right: 20px;
+                left: auto;
+            }
+        }
+
+        /* Large screen adjustments */
+        @media (min-width: 1440px) {
+            .card-container {
+                width: 140px;
+                height: 210px;
+            }
+
+            #cards-area {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
         }
     </style>
 </head>
