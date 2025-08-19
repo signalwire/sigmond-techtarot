@@ -329,43 +329,197 @@ class SigmondTarotReader(AgentBase):
 
 def main():
     """Run Sigmond the Tarot Reader"""
-    parser = argparse.ArgumentParser(description="Run Sigmond the Tarot Reader")
-    parser.add_argument("--suppress-logs", action="store_true", help="Suppress extra logs")
+    import sys
+    
+    # Check if we're being run by swaig-test or as a module
+    is_swaig_test = any('swaig-test' in arg or 'test_swaig' in arg for arg in sys.argv)
+    
+    # If run by swaig-test, return the agent instance for testing
+    if is_swaig_test:
+        return SigmondTarotReader()
+    
+    # Normal standalone execution
+    parser = argparse.ArgumentParser(
+        description='Sigmond - The SignalWire Tarot Reader',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Example usage:
+  python3 sigmond_tarot_steps.py                  # Run on default port 5000
+  python3 sigmond_tarot_steps.py --port 8080      # Run on port 8080
+  python3 sigmond_tarot_steps.py -p 5000          # Run on port 5000
+        """
+    )
     parser.add_argument(
         '--port', '-p',
         type=int,
         default=int(os.environ.get('PORT', 5000)),
         help='Port to run the agent on (default: 5000 or $PORT)'
     )
-    # Use parse_known_args to handle unknown arguments from swaig-test
-    args, unknown = parser.parse_known_args()
     
-    # Create the agent with log suppression if requested
-    sigmond = SigmondTarotReader(suppress_logs=args.suppress_logs)
-    
-    # Get and print the authentication credentials
-    username, password, source = sigmond.get_basic_auth_credentials(include_source=True)
+    args = parser.parse_args()
+    port = args.port
     
     print("=" * 60)
     print("🔮 Sigmond - The SignalWire Tarot Reader")
     print("=" * 60)
+    print()
     print("Sigmond is a mystical tarot reader who provides insights")
     print("into your past, present, and future using tech-themed cards.")
     print()
     print("Example things you can say:")
     print("  • 'Hello Sigmond, can you read my tarot?'")
-    print("  • 'Draw my cards please'") 
+    print("  • 'Draw my cards please'")
     print("  • 'Tell me about my future'")
     print("  • 'I'd like a tarot reading'")
     print()
-    print(f"Agent available at: http://localhost:{args.port}/")
-    print(f"Basic Auth: {username}:{password}")
-    print(f"Starting Sigmond on port {args.port}... Press Ctrl+C to stop.")
+    
+    # Create and run Sigmond
+    sigmond = SigmondTarotReader()
+    
+    # Get auth credentials for display
+    username, password = sigmond.get_basic_auth_credentials()
+    
+    # Set up web directories
+    web_dir = Path(__file__).parent.parent / "web"
+    client_dir = web_dir / "client"
+    
+    # Create a custom FastAPI app
+    from fastapi import FastAPI
+    from fastapi.middleware.cors import CORSMiddleware
+    from fastapi.staticfiles import StaticFiles
+    from fastapi.responses import FileResponse, RedirectResponse
+    
+    app = FastAPI(redirect_slashes=False)
+    
+    # Add CORS middleware
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    
+    # Mount static directories WITHOUT authentication
+    if web_dir.exists():
+        # Mount card images
+        card_images_dir = web_dir / "card_images"
+        if card_images_dir.exists():
+            app.mount("/card_images", StaticFiles(directory=str(card_images_dir)), name="card_images")
+        
+        # Serve individual media files
+        @app.get("/bgmusic.mp3")
+        async def serve_bgmusic():
+            music_path = web_dir / "bgmusic.mp3"
+            if music_path.exists():
+                return FileResponse(str(music_path), media_type="audio/mpeg")
+            return {"error": "bgmusic.mp3 not found"}
+        
+        @app.get("/sigmond_tarot_idle.mp4")
+        async def serve_idle_video():
+            video_path = web_dir / "sigmond_tarot_idle.mp4"
+            if video_path.exists():
+                return FileResponse(str(video_path), media_type="video/mp4")
+            return {"error": "Video not found"}
+        
+        @app.get("/sigmond_tarot_talking.mp4")
+        async def serve_talking_video():
+            video_path = web_dir / "sigmond_tarot_talking.mp4"
+            if video_path.exists():
+                return FileResponse(str(video_path), media_type="video/mp4")
+            return {"error": "Video not found"}
+        
+        # Serve client files at root
+        @app.get("/")
+        async def serve_index():
+            index_path = client_dir / "index.html"
+            if index_path.exists():
+                return FileResponse(str(index_path), media_type="text/html")
+            return {"error": "Client not found"}
+        
+        @app.get("/app.js")
+        async def serve_app_js():
+            js_path = client_dir / "app.js"
+            if js_path.exists():
+                return FileResponse(str(js_path), media_type="application/javascript")
+            return {"error": "app.js not found"}
+        
+        @app.get("/signalwire.js")
+        async def serve_signalwire_js():
+            js_path = client_dir / "signalwire.js"
+            if js_path.exists():
+                return FileResponse(str(js_path), media_type="application/javascript")
+            return {"error": "signalwire.js not found"}
+        
+        # Serve favicon
+        @app.get("/favicon.svg")
+        async def serve_favicon_svg():
+            favicon_path = client_dir / "favicon.svg"
+            if favicon_path.exists():
+                return FileResponse(str(favicon_path), media_type="image/svg+xml")
+            return {"error": "favicon.svg not found"}
+        
+        @app.get("/favicon.ico")
+        async def serve_favicon_ico():
+            # Serve SVG as fallback for .ico requests
+            favicon_path = client_dir / "favicon.svg"
+            if favicon_path.exists():
+                return FileResponse(str(favicon_path), media_type="image/svg+xml")
+            return {"error": "favicon not found"}
+        
+        # Serve Open Graph image
+        @app.get("/og-image.png")
+        @app.get("/og-image.svg")
+        async def serve_og_image():
+            og_image_path = web_dir / "og-image.svg"
+            if og_image_path.exists():
+                return FileResponse(str(og_image_path), media_type="image/svg+xml",
+                                  headers={
+                                      "Cache-Control": "public, max-age=86400",
+                                      "Content-Type": "image/svg+xml"
+                                  })
+            return {"error": "og-image not found"}
+        
+        # For now, use the same image for og-logo (we can create a specific one later)
+        @app.get("/og-logo.png")
+        async def serve_og_logo():
+            # You can replace this with a specific logo file if you have one
+            og_logo_path = web_dir / "og-image.svg"  
+            if og_logo_path.exists():
+                return FileResponse(str(og_logo_path), media_type="image/svg+xml",
+                                  headers={
+                                      "Cache-Control": "public, max-age=86400",
+                                      "Content-Type": "image/svg+xml"
+                                  })
+            return {"error": "og-logo not found"}
+    
+    # Mount the agent's routes at /tarot (with authentication)
+    router = sigmond.as_router()
+    app.include_router(router, prefix="/tarot")
+    
+    # Add redirects for /tarot
+    @app.get("/tarot")
+    async def redirect_to_tarot_slash_get():
+        return RedirectResponse(url="/tarot/", status_code=307)
+    
+    @app.post("/tarot")
+    async def redirect_to_tarot_slash_post():
+        return RedirectResponse(url="/tarot/", status_code=307)
+    
+    # Store the app in the agent
+    sigmond._app = app
+    
+    print(f"Web client available at: http://localhost:{port}/")
+    print(f"Sigmond API available at: http://localhost:{port}/tarot")
+    print(f"Basic Auth required for /tarot: {username}:{password}")
+    print()
+    print(f"Starting Sigmond on port {port}... Press Ctrl+C to stop.")
     print("=" * 60)
     
     try:
-        # Start the agent using the built-in serve method
-        sigmond.run(port=args.port)
+        # Run the combined app with uvicorn
+        import uvicorn
+        uvicorn.run(app, host="0.0.0.0", port=port)
     except KeyboardInterrupt:
         print("\n🔮 The spirits have departed... Until next time!")
 
