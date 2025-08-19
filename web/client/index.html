@@ -100,8 +100,8 @@
         }
 
         #control-panel.with-cards {
-            /* Stay below video when cards are showing */
-            top: calc(60vh + 30px);
+            /* Position below the smaller video when cards are showing */
+            top: calc(45vh + 25px);
         }
 
         /* Make buttons horizontal layout */
@@ -516,8 +516,9 @@
         }
 
         #video-container.with-cards {
-            /* Keep video at top, just adjust width if needed */
-            width: var(--video-width-normal);
+            /* Move video up when cards are showing to avoid being blocked */
+            top: 5px;
+            transform: translateX(-50%) translateY(-10px);
         }
 
         #video-container video {
@@ -532,6 +533,12 @@
                 0 0 60px rgba(212, 175, 55, 0.3),
                 0 0 90px rgba(212, 175, 55, 0.1),
                 inset 0 0 30px rgba(212, 175, 55, 0.2);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Reduce video size when cards are showing */
+        #video-container.with-cards video {
+            max-height: 45vh;
         }
 
         /* Loading spinner */
@@ -559,7 +566,15 @@
             }
 
             #video-container video {
-                max-height: 45vh; /* Smaller on mobile */
+                max-height: 40vh; /* Base mobile size */
+            }
+
+            #video-container.with-cards video {
+                max-height: 35vh; /* Even smaller when cards showing */
+            }
+
+            #video-container.with-cards {
+                transform: translateX(-50%) translateY(-15px); /* Move up more on mobile */
             }
 
             #control-panel {
@@ -568,9 +583,13 @@
             }
             
             #control-panel.connected {
-                top: calc(50vh + 20px); /* Move to top when connected */
+                top: calc(40vh + 20px); /* Adjust for mobile video size */
                 bottom: auto;
                 padding: 10px 15px;
+            }
+
+            #control-panel.with-cards {
+                top: calc(35vh + 15px); /* Adjust for smaller video with cards */
             }
 
             #control-panel button {
