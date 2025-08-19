@@ -65,43 +65,61 @@
             position: relative;
         }
 
-        /* Control Panel */
+        /* Control Panel - positioned below video */
         #control-panel {
             position: fixed;
-            bottom: 20px;
+            bottom: 30px; /* Bottom positioning for idle screen */
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.9);
-            padding: 15px;
-            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 20px 25px;
+            border-radius: 20px;
             z-index: 1000;
-            border: 2px solid #d4af37;
-            backdrop-filter: blur(5px);
-            max-width: 400px;
-            min-width: 300px;
+            border: 3px solid #d4af37;
+            backdrop-filter: blur(10px);
             transition: all 0.6s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 
+                0 15px 40px rgba(0,0,0,0.7),
+                0 0 0 1px rgba(212, 175, 55, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* When connected, switch to top positioning and horizontal layout */
+        #control-panel.connected {
+            top: calc(60vh + 30px);
+            bottom: auto;
+            flex-direction: row;
+            gap: 10px;
+            padding: 12px 20px;
+            border-radius: 15px;
         }
 
         #control-panel.with-cards {
-            bottom: calc(var(--card-area-height) + 20px);
-            right: 10px;
-            left: auto;
-            transform: none;
-            max-width: 200px;
-            min-width: 150px;
-            padding: 10px;
+            /* Stay below video when cards are showing */
+            top: calc(60vh + 30px);
         }
 
-        #control-panel.connected {
-            padding: 8px;
-            background: rgba(0, 0, 0, 0.8);
-            opacity: 0.9;
-            border-radius: 15px;
+        /* Make buttons horizontal layout */
+        #control-panel > button {
+            margin: 0 5px;
         }
+
+        /* Vertical layout for initial screen and non-connected states */
+        #control-panel:not(.connected) {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        #control-panel:not(.connected) > button {
+            margin: 3px 0;
+        }
+
+        /* Remove redundant connected styles - handled above */
 
         #control-panel.connected button {
             padding: 3px 6px;
@@ -122,17 +140,20 @@
             background: linear-gradient(45deg, #d4af37, #f4cf47);
             border: none;
             color: #1a1a2e;
-            padding: 12px 24px;
+            padding: 16px 24px;
             margin: 5px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: clamp(14px, 2vw, 18px);
+            font-size: clamp(14px, 2.5vw, 16px);
             font-weight: bold;
             transition: all 0.3s;
-            min-width: 120px;
+            min-width: 280px;
+            max-width: 350px;
             text-transform: uppercase;
             letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         #control-panel button:hover:not(:disabled) {
@@ -148,23 +169,58 @@
         }
 
         #status {
-            margin-top: 10px;
-            font-size: 14px;
+            font-size: 16px;
             text-align: center;
             color: #d4af37;
+            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            margin-top: 0;
+        }
+
+        /* Improve checkbox styling */
+        #control-panel label {
+            color: #d4af37 !important;
+            font-size: 14px !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #control-panel label:hover {
+            color: #f4cf47 !important;
+        }
+
+        #control-panel input[type="checkbox"] {
+            margin: 0 !important;
+            accent-color: #d4af37;
+            transform: scale(1.2);
+        }
+
+        /* Hide checkboxes when connected */
+        #control-panel.connected label {
+            display: none;
         }
         
-        /* Local video preview */
+        /* Local video preview - positioned in lower right */
         #local-video-container {
-            margin-top: 15px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
             display: none;
-            width: 200px;
-            height: 150px;
+            width: 160px;
+            height: 120px;
             background: #000;
             border-radius: 8px;
             overflow: hidden;
             border: 2px solid #d4af37;
-            position: relative;
+            z-index: 500;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        #local-video-container.with-cards {
+            bottom: calc(var(--card-area-height) + 20px);
         }
         
         #local-video-container video {
@@ -445,7 +501,7 @@
             transform: rotateY(180deg) rotate(180deg);
         }
 
-        /* Video container */
+        /* Video container - always at top */
         #video-container {
             position: fixed;
             top: 10px;
@@ -453,23 +509,21 @@
             transform: translateX(-50%);
             width: var(--video-width-normal);
             max-width: 1280px;
-            height: var(--video-area-height-full);
+            height: auto;
             background: transparent;
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 5;
         }
 
         #video-container.with-cards {
-            width: var(--video-width-with-cards);
-            height: var(--video-area-height-with-cards);
-            right: 10px;
-            left: auto;
-            transform: none;
+            /* Keep video at top, just adjust width if needed */
+            width: var(--video-width-normal);
         }
 
         #video-container video {
             width: 100%;
-            height: 100%;
+            height: auto;
+            max-height: 60vh;
             object-fit: contain;
             border: 3px solid #d4af37;
             border-radius: 15px;
@@ -504,30 +558,45 @@
                 --video-width-with-cards: 45vw;
             }
 
-            #control-panel {
-                max-width: 280px;
-                min-width: 200px;
-                padding: 12px;
-                bottom: 15px;
+            #video-container video {
+                max-height: 45vh; /* Smaller on mobile */
             }
-            
-            #control-panel.with-cards {
-                max-width: 160px;
-                min-width: 120px;
-                padding: 8px;
-                bottom: calc(var(--card-area-height) + 15px);
+
+            #control-panel {
+                bottom: 20px; /* Keep at bottom for mobile idle screen */
+                padding: 15px 20px;
             }
             
             #control-panel.connected {
-                padding: 8px;
-                opacity: 0.9;
+                top: calc(50vh + 20px); /* Move to top when connected */
+                bottom: auto;
+                padding: 10px 15px;
             }
 
             #control-panel button {
-                padding: 10px 16px;
+                padding: 12px 16px;
                 margin: 4px;
                 font-size: 14px;
-                min-width: 100px;
+                min-width: 250px;
+                max-width: 280px;
+            }
+
+            #control-panel.connected button {
+                padding: 8px 12px;
+                font-size: 12px;
+                min-width: 80px;
+                max-width: none;
+            }
+
+            #local-video-container {
+                width: 120px;
+                height: 90px;
+                bottom: 15px;
+                right: 15px;
+            }
+
+            #local-video-container.with-cards {
+                bottom: calc(var(--card-area-height) + 15px);
             }
             
             #control-panel.connected button {
@@ -691,21 +760,23 @@
         <button id="connectBtn">🔮 Connect to Sigmond 🔮</button>
         <button id="hangupBtn" style="display: none;">Leave</button>
         <button id="muteBtn" style="display: none;">Mute</button>
-        <div style="margin-top: 10px;">
-            <label style="color: #d4af37; font-size: 14px; margin-right: 15px;">
-                <input type="checkbox" id="startMuted" style="margin-right: 5px;">
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+            <label>
+                <input type="checkbox" id="startMuted">
                 Start muted
             </label>
-            <label style="color: #d4af37; font-size: 14px;">
-                <input type="checkbox" id="showLog" style="margin-right: 5px;">
+            <label>
+                <input type="checkbox" id="showLog">
                 Show log
             </label>
         </div>
         <div id="status">Ready to connect</div>
-        <div id="local-video-container">
-            <video id="local-video" autoplay muted></video>
-            <div id="local-video-label">You</div>
-        </div>
+    </div>
+
+    <!-- Local video preview - separate from control panel -->
+    <div id="local-video-container">
+        <video id="local-video" autoplay muted></video>
+        <div id="local-video-label">You</div>
     </div>
 
     <div id="event-log" class="collapsed" style="display: none;">
