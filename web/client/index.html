@@ -299,32 +299,33 @@
         }
 
 
-        /* Tarot Table Container - completely hidden by default */
+        /* Tarot Table Container - flex layout to prevent overlap */
         #tarot-table {
             display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            flex: 0 0 auto;
             height: var(--card-area-height);
             background: radial-gradient(ellipse at center, #2d1b69 0%, #0f0c29 100%);
             overflow: visible;
             align-items: center;
             justify-content: center;
             padding: 10px;
-            transform: translateY(100%);
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10;
+            margin-top: 10px;
+            border-radius: 15px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         #tarot-table.visible {
             display: flex;
+            opacity: 1;
             transform: translateY(0);
         }
 
         #tarot-table.hidden {
             display: none;
-            transform: translateY(100%);
+            opacity: 0;
+            transform: translateY(20px);
         }
 
         /* Mystical background effects */
@@ -520,7 +521,7 @@
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
             :root {
-                --card-area-height: 35vh;
+                --card-area-height: 30vh;
             }
 
             .main-container {
@@ -528,7 +529,7 @@
             }
 
             #video-container {
-                height: 45vh; /* Smaller on mobile */
+                height: 40vh; /* Balanced size on mobile */
             }
 
             .controls-container {
@@ -566,14 +567,13 @@
             }
 
             #local-video-container {
-                width: 150px;
-                height: 112px;
-                border: 1px solid #d4af37;
+                width: 120px;
+                height: 90px;
             }
 
             #local-video-container.connected {
-                width: 100px;
-                height: 75px;
+                width: 80px;
+                height: 60px;
                 bottom: 10px;
                 right: 10px;
             }
@@ -734,8 +734,9 @@
                     Show log
                 </label>
             </div>
+        </div>
 
-        <!-- Tarot table at bottom -->
+        <!-- Tarot table in main flow -->
         <div id="tarot-table" class="hidden">
             <div class="card-spread">
                 <div class="card-slot" id="past-slot">
@@ -760,24 +761,6 @@
             <span class="toggle-indicator">▼</span>
         </div>
         <div id="event-entries"></div>
-    </div>
-    
-    <!-- Tarot table (slides up from bottom) -->
-    <div id="tarot-table" class="hidden">
-        <div class="card-spread">
-            <div class="card-slot" id="past-slot">
-                <div class="card-placeholder">Past</div>
-                <div class="card-slot-title">PAST</div>
-            </div>
-            <div class="card-slot" id="present-slot">
-                <div class="card-placeholder">Present</div>
-                <div class="card-slot-title">PRESENT</div>
-            </div>
-            <div class="card-slot" id="future-slot">
-                <div class="card-placeholder">Future</div>
-                <div class="card-slot-title">FUTURE</div>
-            </div>
-        </div>
     </div>
 
     <!-- Load SignalWire JS SDK (locally built) -->
