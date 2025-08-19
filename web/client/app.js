@@ -718,20 +718,24 @@ function flipCard(position) {
 function revealCardArea() {
     const tarotTable = document.getElementById('tarot-table');
     const videoContainer = document.getElementById('video-container');
+    const controlPanel = document.getElementById('control-panel');
     
     tarotTable.classList.remove('hidden');
     tarotTable.classList.add('visible');
     videoContainer.classList.add('with-cards');
+    controlPanel.classList.add('with-cards');
     cardsRevealed = true;
 }
 
 function hideCardArea() {
     const tarotTable = document.getElementById('tarot-table');
     const videoContainer = document.getElementById('video-container');
+    const controlPanel = document.getElementById('control-panel');
     
     tarotTable.classList.remove('visible');
     tarotTable.classList.add('hidden');
     videoContainer.classList.remove('with-cards');
+    controlPanel.classList.remove('with-cards');
     cardsRevealed = false;
 }
 

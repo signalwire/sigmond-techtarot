@@ -33,9 +33,11 @@
     <style>
         :root {
             /* Adjustable sizes for video and card areas */
-            --card-area-height: 40vh;  /* Height of card area when visible */
-            --video-area-height-with-cards: 60vh;  /* Height of video when cards are showing */
+            --card-area-height: 45vh;  /* Height of card area when visible */
+            --video-area-height-with-cards: 55vh;  /* Height of video when cards are showing */
             --video-area-height-full: 100vh;  /* Height of video when cards are hidden */
+            --video-width-normal: 85vw;  /* Normal video width */
+            --video-width-with-cards: 35vw;  /* Smaller video width when cards showing */
         }
         
         * {
@@ -66,25 +68,37 @@
         /* Control Panel */
         #control-panel {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            top: calc(var(--video-area-height-full) + 10px);
+            left: 50%;
+            transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.9);
             padding: 10px;
             border-radius: 10px;
             z-index: 1000;
             border: 1px solid #d4af37;
             backdrop-filter: blur(5px);
-            max-width: 300px;
+            max-width: 400px;
+            min-width: 300px;
             transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #control-panel.with-cards {
+            top: calc(var(--video-area-height-with-cards) + 10px);
+            right: 10px;
+            left: auto;
+            transform: none;
+            max-width: 200px;
+            min-width: 150px;
         }
 
         #control-panel.connected {
-            padding: 3px;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            opacity: 0.85;
-            border-radius: 20px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            opacity: 0.9;
+            border-radius: 15px;
         }
 
         #control-panel.connected button {
@@ -245,11 +259,11 @@
             right: 0;
             height: var(--card-area-height);
             background: radial-gradient(ellipse at center, #2d1b69 0%, #0f0c29 100%);
-            overflow: hidden;
+            overflow: visible;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2px;
+            padding: 10px;
             transform: translateY(100%);
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 10;
@@ -286,17 +300,21 @@
         /* Card spread container */
         .card-spread {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             position: relative;
             z-index: 1;
+            max-width: calc(100vw - 40px);
+            justify-content: center;
         }
 
         /* Card slot */
         .card-slot {
             position: relative;
-            width: calc(var(--card-area-height) * 0.95 * 0.592);  /* 95% of container height * aspect ratio */
-            height: calc(var(--card-area-height) * 0.95);  /* 95% of container height */
+            width: min(25vw, calc(var(--card-area-height) * 0.7 * 0.592));  /* Smaller cards that fit screen */
+            height: calc(var(--card-area-height) * 0.7);  /* 70% of container height */
             perspective: 1000px;
+            max-width: 140px;
+            max-height: 200px;
         }
 
         .card-slot-title {
@@ -423,38 +441,30 @@
 
         /* Video container */
         #video-container {
-            position: relative;
-            height: var(--video-area-height-full);
-            background: transparent;
-            transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            max-width: 1280px;
-            margin: 0 auto;
-            min-height: 300px;
-        }
-        
-        /* SignalWire may add a wrapper div */
-        #video-container > div {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            max-width: 1280px;
-        }
-
-        #video-container.with-cards {
-            height: var(--video-area-height-with-cards);
-        }
-
-        #video-container video {
-            width: 100%;
-            max-width: 1280px;
-            height: auto;
-            object-fit: contain;
             position: fixed;
             top: 10px;
             left: 50%;
             transform: translateX(-50%);
+            width: var(--video-width-normal);
+            max-width: 1280px;
+            height: var(--video-area-height-full);
+            background: transparent;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 5;
+        }
+
+        #video-container.with-cards {
+            width: var(--video-width-with-cards);
+            height: var(--video-area-height-with-cards);
+            right: 10px;
+            left: auto;
+            transform: none;
+        }
+
+        #video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             border: 3px solid #d4af37;
             border-radius: 15px;
             box-shadow: 
@@ -484,21 +494,25 @@
             :root {
                 --card-area-height: 35vh;
                 --video-area-height-with-cards: 65vh;
+                --video-width-normal: 95vw;
+                --video-width-with-cards: 45vw;
             }
 
             #control-panel {
-                bottom: 10px;
-                right: 10px;
-                padding: 8px;
                 max-width: 250px;
+                min-width: 200px;
+                padding: 8px;
+            }
+            
+            #control-panel.with-cards {
+                max-width: 150px;
+                min-width: 120px;
+                padding: 6px;
             }
             
             #control-panel.connected {
-                padding: 2px;
-                bottom: 5px;
-                right: 5px;
-                max-width: none;
-                opacity: 0.75;
+                padding: 6px;
+                opacity: 0.85;
             }
             
             #control-panel.connected button {
@@ -530,14 +544,15 @@
                 font-size: 12px;
             }
 
-            #cards-area {
-                padding: 10px;
-                bottom: 5px;
+            .card-slot {
+                width: min(22vw, 100px);
+                height: min(32vh, 150px);
+                max-width: 100px;
+                max-height: 150px;
             }
 
-            .card-container {
-                width: 90px;
-                height: 135px;
+            .card-spread {
+                gap: 15px;
             }
 
             .card-position {
