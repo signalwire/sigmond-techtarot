@@ -68,30 +68,32 @@
         /* Control Panel */
         #control-panel {
             position: fixed;
-            top: calc(var(--video-area-height-full) + 10px);
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.9);
-            padding: 10px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 15px;
             z-index: 1000;
-            border: 1px solid #d4af37;
+            border: 2px solid #d4af37;
             backdrop-filter: blur(5px);
             max-width: 400px;
             min-width: 300px;
-            transition: all 0.3s ease;
+            transition: all 0.6s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         #control-panel.with-cards {
-            top: calc(var(--video-area-height-with-cards) + 10px);
+            bottom: calc(var(--card-area-height) + 20px);
             right: 10px;
             left: auto;
             transform: none;
             max-width: 200px;
             min-width: 150px;
+            padding: 10px;
         }
 
         #control-panel.connected {
@@ -117,22 +119,26 @@
         }
 
         #control-panel button {
-            background: #d4af37;
+            background: linear-gradient(45deg, #d4af37, #f4cf47);
             border: none;
             color: #1a1a2e;
-            padding: 8px 16px;
-            margin: 3px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: clamp(14px, 2vw, 16px);
+            font-size: clamp(14px, 2vw, 18px);
             font-weight: bold;
             transition: all 0.3s;
-            min-width: 80px;
+            min-width: 120px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
         #control-panel button:hover:not(:disabled) {
-            background: #b8941f;
-            transform: scale(1.05);
+            background: linear-gradient(45deg, #b8941f, #d4af37);
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.5);
         }
 
         #control-panel button:disabled {
@@ -499,20 +505,29 @@
             }
 
             #control-panel {
-                max-width: 250px;
+                max-width: 280px;
                 min-width: 200px;
-                padding: 8px;
+                padding: 12px;
+                bottom: 15px;
             }
             
             #control-panel.with-cards {
-                max-width: 150px;
+                max-width: 160px;
                 min-width: 120px;
-                padding: 6px;
+                padding: 8px;
+                bottom: calc(var(--card-area-height) + 15px);
             }
             
             #control-panel.connected {
-                padding: 6px;
-                opacity: 0.85;
+                padding: 8px;
+                opacity: 0.9;
+            }
+
+            #control-panel button {
+                padding: 10px 16px;
+                margin: 4px;
+                font-size: 14px;
+                min-width: 100px;
             }
             
             #control-panel.connected button {
@@ -661,13 +676,19 @@
     </div>
     
     <!-- Deck placeholder shown before call starts -->
-    <div id="deck-placeholder" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5;">
-        <img src="../card_images/tarot_back.jpg" alt="Tarot Deck" style="width: 400px; height: auto; border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
+    <div id="deck-placeholder" style="position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 5; text-align: center;">
+        <img src="../card_images/tarot_back.jpg" alt="Tarot Deck" style="width: min(400px, 80vw); height: auto; border-radius: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
+        <div style="margin-top: 20px; color: #d4af37; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-family: 'Georgia', serif;">
+            🔮 Welcome to SignalWire TechTarot 🔮
+        </div>
+        <div style="margin-top: 10px; color: #eee; font-size: 16px; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); font-family: 'Georgia', serif; max-width: 400px;">
+            Discover your tech destiny with Sigmond, the mystical AI tarot reader
+        </div>
     </div>
 
     <!-- Control panel floats over everything -->
     <div id="control-panel">
-        <button id="connectBtn">Connect</button>
+        <button id="connectBtn">🔮 Connect to Sigmond 🔮</button>
         <button id="hangupBtn" style="display: none;">Leave</button>
         <button id="muteBtn" style="display: none;">Mute</button>
         <div style="margin-top: 10px;">
