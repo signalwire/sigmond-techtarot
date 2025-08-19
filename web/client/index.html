@@ -65,107 +65,86 @@
             position: relative;
         }
 
-        /* Control Panel - positioned below video */
-        #control-panel {
-            position: fixed;
-            bottom: 30px; /* Bottom positioning for idle screen */
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.95);
-            padding: 20px 25px;
-            border-radius: 20px;
-            z-index: 1000;
-            border: 3px solid #d4af37;
-            backdrop-filter: blur(10px);
-            transition: all 0.6s ease;
+        /* Main Layout Structure */
+        .main-container {
             display: flex;
             flex-direction: column;
-            align-items: center;
+            height: 100vh;
+            padding: 10px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Video Container - Fixed at top like blackjack */
+        #video-container {
+            flex: 0 0 auto;
+            display: flex;
             justify-content: center;
-            gap: 12px;
-            box-shadow: 
-                0 15px 40px rgba(0,0,0,0.7),
-                0 0 0 1px rgba(212, 175, 55, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-
-        /* When connected, switch to top positioning and horizontal layout */
-        #control-panel.connected {
-            top: calc(60vh + 30px);
-            bottom: auto;
-            flex-direction: row;
-            gap: 10px;
-            padding: 12px 20px;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 15px;
+            margin-bottom: 10px;
+            height: 50vh;
+            position: relative;
         }
 
-        #control-panel.with-cards {
-            /* Position below the smaller video when cards are showing */
-            top: calc(45vh + 25px);
+        /* Controls Container - Between video and cards like blackjack */
+        .controls-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            backdrop-filter: blur(10px);
+            gap: 15px;
         }
 
-        /* Make buttons horizontal layout */
-        #control-panel > button {
-            margin: 0 5px;
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
-        /* Vertical layout for initial screen and non-connected states */
-        #control-panel:not(.connected) {
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        #control-panel:not(.connected) > button {
-            margin: 3px 0;
-        }
-
-        /* Remove redundant connected styles - handled above */
-
-        #control-panel.connected button {
-            padding: 3px 6px;
-            font-size: 10px;
-            min-width: 35px;
-            margin: 1px;
-            border-radius: 12px;
-        }
-
-        #control-panel.connected .checkbox-container,
-        #control-panel.connected #status,
-        #control-panel.connected #local-video-container,
-        #control-panel.connected > div:not(:first-child) {
-            display: none;
-        }
-
-        #control-panel button {
+        /* Button Styles - Touch friendly */
+        .controls button {
             background: linear-gradient(45deg, #d4af37, #f4cf47);
             border: none;
             color: #1a1a2e;
-            padding: 16px 24px;
-            margin: 5px;
-            border-radius: 8px;
+            padding: 15px 25px;
+            margin: 0;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: clamp(14px, 2.5vw, 16px);
+            font-size: 16px;
             font-weight: bold;
             transition: all 0.3s;
-            min-width: 280px;
-            max-width: 350px;
+            min-width: 100px;
             text-transform: uppercase;
             letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
             white-space: nowrap;
-            overflow: hidden;
         }
 
-        #control-panel button:hover:not(:disabled) {
+        .controls button:hover:not(:disabled) {
             background: linear-gradient(45deg, #b8941f, #d4af37);
-            transform: scale(1.05) translateY(-2px);
+            transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(212, 175, 55, 0.5);
         }
 
-        #control-panel button:disabled {
+        .controls button:disabled {
             background: #666;
             cursor: not-allowed;
             opacity: 0.7;
+        }
+
+        /* Connect button - larger when idle */
+        .controls button#connectBtn:not(.connected-mode) {
+            padding: 20px 40px;
+            font-size: 18px;
+            min-width: 280px;
         }
 
         #status {
@@ -203,24 +182,32 @@
             display: none;
         }
         
-        /* Local video preview - positioned in lower right */
+        /* Local video - positioned in video container center when idle */
         #local-video-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform: translate(-50%, 50%);
             display: none;
-            width: 160px;
-            height: 120px;
+            width: 200px;
+            height: 150px;
             background: #000;
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
-            border: 2px solid #d4af37;
-            z-index: 500;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            border: 3px solid #d4af37;
+            z-index: 10;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+            transition: all 0.8s ease;
         }
 
-        #local-video-container.with-cards {
-            bottom: calc(var(--card-area-height) + 20px);
+        /* Move to lower right of video container when connected */
+        #local-video-container.connected {
+            bottom: 20px;
+            right: 20px;
+            left: auto;
+            transform: none;
+            width: 150px;
+            height: 112px;
         }
         
         #local-video-container video {
@@ -501,30 +488,9 @@
             transform: rotateY(180deg) rotate(180deg);
         }
 
-        /* Video container - always at top */
-        #video-container {
-            position: fixed;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: var(--video-width-normal);
-            max-width: 1280px;
-            height: auto;
-            background: transparent;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 5;
-        }
-
-        #video-container.with-cards {
-            /* Move video up when cards are showing to avoid being blocked */
-            top: 5px;
-            transform: translateX(-50%) translateY(-10px);
-        }
-
         #video-container video {
             width: 100%;
-            height: auto;
-            max-height: 60vh;
+            height: 100%;
             object-fit: contain;
             border: 3px solid #d4af37;
             border-radius: 15px;
@@ -533,12 +499,6 @@
                 0 0 60px rgba(212, 175, 55, 0.3),
                 0 0 90px rgba(212, 175, 55, 0.1),
                 inset 0 0 30px rgba(212, 175, 55, 0.2);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Reduce video size when cards are showing */
-        #video-container.with-cards video {
-            max-height: 45vh;
         }
 
         /* Loading spinner */
@@ -560,90 +520,54 @@
         @media (max-width: 768px) {
             :root {
                 --card-area-height: 35vh;
-                --video-area-height-with-cards: 65vh;
-                --video-width-normal: 95vw;
-                --video-width-with-cards: 45vw;
             }
 
-            #video-container video {
-                max-height: 40vh; /* Base mobile size */
+            .main-container {
+                padding: 5px;
             }
 
-            #video-container.with-cards video {
-                max-height: 35vh; /* Even smaller when cards showing */
+            #video-container {
+                height: 45vh; /* Smaller on mobile */
             }
 
-            #video-container.with-cards {
-                transform: translateX(-50%) translateY(-15px); /* Move up more on mobile */
+            .controls-container {
+                padding: 12px 15px;
+                margin-bottom: 5px;
+                flex-wrap: wrap;
+                gap: 10px;
             }
 
-            #control-panel {
-                bottom: 20px; /* Keep at bottom for mobile idle screen */
-                padding: 15px 20px;
-            }
-            
-            #control-panel.connected {
-                top: calc(40vh + 20px); /* Adjust for mobile video size */
-                bottom: auto;
-                padding: 10px 15px;
+            .controls {
+                flex-wrap: wrap;
+                gap: 8px;
+                justify-content: center;
             }
 
-            #control-panel.with-cards {
-                top: calc(35vh + 15px); /* Adjust for smaller video with cards */
-            }
-
-            #control-panel button {
-                padding: 12px 16px;
-                margin: 4px;
+            .controls button {
+                padding: 12px 18px;
                 font-size: 14px;
+                min-width: 90px;
+            }
+
+            .controls button#connectBtn:not(.connected-mode) {
+                padding: 16px 25px;
+                font-size: 16px;
                 min-width: 250px;
-                max-width: 280px;
-            }
-
-            #control-panel.connected button {
-                padding: 8px 12px;
-                font-size: 12px;
-                min-width: 80px;
-                max-width: none;
             }
 
             #local-video-container {
+                width: 140px;
+                height: 105px;
+            }
+
+            #local-video-container.connected {
                 width: 120px;
                 height: 90px;
-                bottom: 15px;
-                right: 15px;
             }
 
-            #local-video-container.with-cards {
-                bottom: calc(var(--card-area-height) + 15px);
-            }
-            
-            #control-panel.connected button {
-                padding: 2px 5px;
-                font-size: 9px;
-                min-width: 28px;
-            }
-
-            #control-panel button {
-                padding: 6px 12px;
-                margin: 2px;
-                font-size: 14px;
-                min-width: 70px;
-            }
-
-            #local-video-container {
-                width: 120px;
-                height: 90px;
-                margin-top: 10px;
-            }
-
-            #status {
-                font-size: 12px;
-                margin-top: 8px;
-            }
-
-            .checkbox-container {
-                padding: 8px;
+            .settings-container {
+                flex-direction: column;
+                gap: 8px !important;
                 font-size: 12px;
             }
 
@@ -756,46 +680,65 @@
     </style>
 </head>
 <body>
-    <!-- Wrapper to control positioning -->
-    <div id="video-wrapper" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center;">
+    <div class="main-container">
+        <!-- Video Container at top -->
         <div id="video-container">
             <!-- SignalWire will insert video element here -->
+            
+            <!-- Local video preview inside video container -->
+            <div id="local-video-container">
+                <video id="local-video" autoplay muted></video>
+                <div id="local-video-label">You</div>
+            </div>
+            
+            <!-- Deck placeholder shown in video area when idle -->
+            <div id="deck-placeholder" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; text-align: center;">
+                <img src="../card_images/tarot_back.jpg" alt="Tarot Deck" style="width: min(300px, 60vw); height: auto; border-radius: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
+                <div style="margin-top: 15px; color: #d4af37; font-size: clamp(18px, 4vw, 24px); font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-family: 'Georgia', serif;">
+                    🔮 SignalWire TechTarot 🔮
+                </div>
+                <div style="margin-top: 8px; color: #eee; font-size: clamp(12px, 2.5vw, 16px); text-shadow: 1px 1px 3px rgba(0,0,0,0.8); font-family: 'Georgia', serif; max-width: 350px;">
+                    Mystical AI tarot readings with Sigmond
+                </div>
+            </div>
         </div>
-    </div>
-    
-    <!-- Deck placeholder shown before call starts -->
-    <div id="deck-placeholder" style="position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 5; text-align: center;">
-        <img src="../card_images/tarot_back.jpg" alt="Tarot Deck" style="width: min(400px, 80vw); height: auto; border-radius: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
-        <div style="margin-top: 20px; color: #d4af37; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-family: 'Georgia', serif;">
-            🔮 Welcome to SignalWire TechTarot 🔮
-        </div>
-        <div style="margin-top: 10px; color: #eee; font-size: 16px; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); font-family: 'Georgia', serif; max-width: 400px;">
-            Discover your tech destiny with Sigmond, the mystical AI tarot reader
-        </div>
-    </div>
 
-    <!-- Control panel floats over everything -->
-    <div id="control-panel">
-        <button id="connectBtn">🔮 Connect to Sigmond 🔮</button>
-        <button id="hangupBtn" style="display: none;">Leave</button>
-        <button id="muteBtn" style="display: none;">Mute</button>
-        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
-            <label>
-                <input type="checkbox" id="startMuted">
-                Start muted
-            </label>
-            <label>
-                <input type="checkbox" id="showLog">
-                Show log
-            </label>
-        </div>
-        <div id="status">Ready to connect</div>
-    </div>
+        <!-- Controls between video and cards -->
+        <div class="controls-container">
+            <div class="controls">
+                <button id="connectBtn">🔮 Connect to Sigmond 🔮</button>
+                <button id="hangupBtn" style="display: none;">Leave</button>
+                <button id="muteBtn" style="display: none;">Mute</button>
+            </div>
+            <div id="status">Ready to connect</div>
+            <div class="settings-container" style="display: flex; gap: 15px;">
+                <label style="color: #d4af37; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="startMuted" style="accent-color: #d4af37;">
+                    Start muted
+                </label>
+                <label style="color: #d4af37; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="showLog" style="accent-color: #d4af37;">
+                    Show log
+                </label>
+            </div>
 
-    <!-- Local video preview - separate from control panel -->
-    <div id="local-video-container">
-        <video id="local-video" autoplay muted></video>
-        <div id="local-video-label">You</div>
+        <!-- Tarot table at bottom -->
+        <div id="tarot-table" class="hidden">
+            <div class="card-spread">
+                <div class="card-slot" id="past-slot">
+                    <div class="card-placeholder">Past</div>
+                    <div class="card-slot-title">PAST</div>
+                </div>
+                <div class="card-slot" id="present-slot">
+                    <div class="card-placeholder">Present</div>
+                    <div class="card-slot-title">PRESENT</div>
+                </div>
+                <div class="card-slot" id="future-slot">
+                    <div class="card-placeholder">Future</div>
+                    <div class="card-slot-title">FUTURE</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="event-log" class="collapsed" style="display: none;">

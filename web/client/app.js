@@ -281,6 +281,7 @@ async function connectToCall() {
                 const localStreamClone = roomSession.localStream.clone();
                 localVideo.srcObject = localStreamClone;
                 localVideoContainer.style.display = 'block';
+                localVideoContainer.classList.add('connected');
                 
                 // Log video device being used
                 const videoTracks = roomSession.localStream.getVideoTracks();
@@ -537,6 +538,7 @@ function handleDisconnect() {
     }
     if (localVideoContainer) {
         localVideoContainer.style.display = 'none';
+        localVideoContainer.classList.remove('connected');
     }
     
     // Clean up remote video element if it exists
@@ -717,29 +719,17 @@ function flipCard(position) {
 
 function revealCardArea() {
     const tarotTable = document.getElementById('tarot-table');
-    const videoContainer = document.getElementById('video-container');
-    const controlPanel = document.getElementById('control-panel');
-    const localVideoContainer = document.getElementById('local-video-container');
     
     tarotTable.classList.remove('hidden');
     tarotTable.classList.add('visible');
-    videoContainer.classList.add('with-cards');
-    controlPanel.classList.add('with-cards');
-    localVideoContainer.classList.add('with-cards');
     cardsRevealed = true;
 }
 
 function hideCardArea() {
     const tarotTable = document.getElementById('tarot-table');
-    const videoContainer = document.getElementById('video-container');
-    const controlPanel = document.getElementById('control-panel');
-    const localVideoContainer = document.getElementById('local-video-container');
     
     tarotTable.classList.remove('visible');
     tarotTable.classList.add('hidden');
-    videoContainer.classList.remove('with-cards');
-    controlPanel.classList.remove('with-cards');
-    localVideoContainer.classList.remove('with-cards');
     cardsRevealed = false;
 }
 
