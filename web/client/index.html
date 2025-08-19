@@ -300,8 +300,9 @@
         }
 
 
-        /* Tarot Table Container */
+        /* Tarot Table Container - completely hidden by default */
         #tarot-table {
+            display: none;
             position: fixed;
             bottom: 0;
             left: 0;
@@ -309,7 +310,6 @@
             height: var(--card-area-height);
             background: radial-gradient(ellipse at center, #2d1b69 0%, #0f0c29 100%);
             overflow: visible;
-            display: flex;
             align-items: center;
             justify-content: center;
             padding: 10px;
@@ -319,10 +319,12 @@
         }
 
         #tarot-table.visible {
+            display: flex;
             transform: translateY(0);
         }
 
         #tarot-table.hidden {
+            display: none;
             transform: translateY(100%);
         }
 
