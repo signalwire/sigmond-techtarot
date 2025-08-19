@@ -191,10 +191,9 @@
             display: none;
             width: 200px;
             height: 150px;
-            background: #000;
             border-radius: 12px;
             overflow: hidden;
-            border: 3px solid #d4af37;
+            border: 2px solid #d4af37;
             z-index: 10;
             box-shadow: 0 10px 25px rgba(0,0,0,0.7);
             transition: all 0.8s ease;
@@ -202,12 +201,12 @@
 
         /* Move to lower right of video container when connected */
         #local-video-container.connected {
-            bottom: 20px;
-            right: 20px;
+            bottom: 15px;
+            right: 15px;
             left: auto;
             transform: none;
-            width: 150px;
-            height: 112px;
+            width: 120px;
+            height: 90px;
         }
         
         #local-video-container video {
@@ -534,15 +533,24 @@
 
             .controls-container {
                 padding: 12px 15px;
+                margin-top: 15px;
                 margin-bottom: 5px;
                 flex-wrap: wrap;
                 gap: 10px;
+                justify-content: center;
+            }
+
+            /* Extra spacing for idle screen only */
+            .controls-container:not(.connected) {
+                margin-top: 40px;
+                padding: 20px 15px;
             }
 
             .controls {
                 flex-wrap: wrap;
                 gap: 8px;
                 justify-content: center;
+                width: 100%;
             }
 
             .controls button {
@@ -558,13 +566,16 @@
             }
 
             #local-video-container {
-                width: 140px;
-                height: 105px;
+                width: 150px;
+                height: 112px;
+                border: 1px solid #d4af37;
             }
 
             #local-video-container.connected {
-                width: 120px;
-                height: 90px;
+                width: 100px;
+                height: 75px;
+                bottom: 10px;
+                right: 10px;
             }
 
             .settings-container {

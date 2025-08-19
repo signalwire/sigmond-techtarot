@@ -255,10 +255,10 @@ async function connectToCall() {
             hangupBtn.style.display = 'inline-block';
             muteBtn.style.display = 'inline-block';
             
-            // Add connected class to shrink controls on mobile
-            const controlPanel = document.getElementById('control-panel');
-            if (controlPanel) {
-                controlPanel.classList.add('connected');
+            // Add connected class to controls container for proper positioning
+            const controlsContainer = document.querySelector('.controls-container');
+            if (controlsContainer) {
+                controlsContainer.classList.add('connected');
             }
             
             // Make buttons ultra compact on mobile
@@ -578,10 +578,10 @@ function handleDisconnect() {
     isMuted = false;
     clearCards();
     
-    // Remove connected class to restore normal size
-    const controlPanel = document.getElementById('control-panel');
-    if (controlPanel) {
-        controlPanel.classList.remove('connected');
+    // Remove connected class to restore normal spacing
+    const controlsContainer = document.querySelector('.controls-container');
+    if (controlsContainer) {
+        controlsContainer.classList.remove('connected');
     }
     
     // Restore button text
