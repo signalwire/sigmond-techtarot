@@ -202,8 +202,8 @@ class SigmondTarotReader(AgentBase):
         
         # Set conversation parameters
         self.set_params({
-            "video_talking_file": f"{web_root}/arcana_tarot_talking.mp4",
-            "video_idle_file": f"{web_root}/arcana_tarot_idle.mp4",
+            "video_talking_file": f"{web_root}/arcana_talking.mp4",
+            "video_idle_file": f"{web_root}/arcana_idle.mp4",
             "vad_config": "75",
             "end_of_speech_timeout": 300,
             "max_response_tokens": 3196,
@@ -397,16 +397,16 @@ Example usage:
                 return FileResponse(str(music_path), media_type="audio/mpeg")
             return {"error": "bgmusic.mp3 not found"}
         
-        @app.get("/arcana_tarot_idle.mp4")
+        @app.get("/arcana_idle.mp4")
         async def serve_idle_video():
-            video_path = web_dir / "arcana_tarot_idle.mp4"
+            video_path = web_dir / "arcana_idle.mp4"
             if video_path.exists():
                 return FileResponse(str(video_path), media_type="video/mp4")
             return {"error": "Video not found"}
         
-        @app.get("/arcana_tarot_talking.mp4")
+        @app.get("/arcana_talking.mp4")
         async def serve_talking_video():
-            video_path = web_dir / "arcana_tarot_talking.mp4"
+            video_path = web_dir / "arcana_talking.mp4"
             if video_path.exists():
                 return FileResponse(str(video_path), media_type="video/mp4")
             return {"error": "Video not found"}
