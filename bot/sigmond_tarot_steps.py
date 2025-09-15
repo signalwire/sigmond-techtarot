@@ -172,11 +172,10 @@ class SigmondTarotReader(AgentBase):
             
             return result
         
-        # Configure Sigmond's voice - using ElevenLabs Adam
         self.add_language(
             name="English",
             code="en-US",
-            voice="elevenlabs.adam"  # ElevenLabs Adam voice
+            voice="rime.celeste:arcana"  # Rime Celeste
         )
         
         # Add some mystical hints for better speech recognition
