@@ -202,8 +202,8 @@ class SigmondTarotReader(AgentBase):
         
         # Set conversation parameters
         self.set_params({
-            "video_talking_file": f"{web_root}/sigmond_tarot_talking.mp4",
-            "video_idle_file": f"{web_root}/sigmond_tarot_idle.mp4",
+            "video_talking_file": f"{web_root}/arcana_tarot_talking.mp4",
+            "video_idle_file": f"{web_root}/arcana_tarot_idle.mp4",
             "vad_config": "75",
             "end_of_speech_timeout": 300,
             "max_response_tokens": 3196,
