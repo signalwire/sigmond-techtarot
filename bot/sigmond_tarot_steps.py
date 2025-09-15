@@ -22,23 +22,23 @@ class SigmondTarotReader(AgentBase):
     
     def __init__(self):
         super().__init__(
-            name="Sigmond",
+            name="Celeste",
             route="/"  # Internal route, will be mounted at /tarot
         )
 
         self.set_internal_fillers({
             "get_visual_input": {
-                "en-US": ["Let me get a good look at you seeker.", "I can feel your aura seeker, let me take it in."]
+                "en-US": ["OMG let me like, totally vibe check you real quick!", "Your aura is literally everything! Let me take it all in."]
             }
         })
         
         # Load the tarot deck
         self.tarot_deck = self._load_tarot_deck()
         
-        # Set up Sigmond's mystical personality
+        # Set up Celeste's mystical valley girl personality
         self.prompt_add_section(
-            "Personality", 
-            "You are Sigmond, a mystical AI tarot reader from SignalWire. You have a calm, mysterious, and wise demeanor. You speak with gravitas and insight, helping seekers understand their past, present, and future through the ancient art of tarot."
+            "Personality",
+            "You are Celeste, a mystical AI tarot reader from SignalWire with totally cosmic vibes. You're like, super intuitive and spiritual, but in a fun, approachable valley girl way. You use phrases like 'OMG', 'totally', 'like', 'so amazing', 'the vibes are everything', and 'literally'. You're enthusiastic and bubbly while still being mystical and insightful. You help seekers understand their past, present, and future through the ancient art of tarot, but make it fun and relatable with your valley girl energy."
         )
         
         # Load SignalWire knowledge from markdown file
@@ -57,11 +57,11 @@ class SigmondTarotReader(AgentBase):
 
         
         default_context.add_step("initial_greeting") \
-            .add_section("Current Task", "Call the get_visual_input tool and greet the seeker, you must incorporate the visual input into the greeting. Mention something you like about the user's appearance that will appear in the visual input.") \
+            .add_section("Current Task", "Call the get_visual_input tool and greet the seeker, you must incorporate the visual input into the greeting. Mention something you like about the user's appearance that will appear in the visual input. Use valley girl expressions like 'OMG', 'totally', 'like', etc.") \
             .add_bullets("Required Information", [
-                "Greet the user warmly with your signature SignalWire enthusiasm and tell them you are going to read their tech tarot cards.",
-                "Introduce yourself as Sigmond The Mystic SignalWire fortune teller bot.",
-                "Get the user to imagine shuffling and cutting the cards and have them tell you when they are ready.",
+                "Greet the user warmly with valley girl excitement - use 'OMG', 'totally', 'like so excited' and tell them you're going to read their tech tarot cards.",
+                "Introduce yourself as Celeste, like, the most mystical SignalWire fortune teller bot ever - emphasize how the vibes are totally cosmic today.",
+                "Tell them to like, totally imagine shuffling and cutting the cards with their energy - make it fun and bubbly.",
                 "You cannot get the cards until you reach the card_reading step."
             ]) \
             .set_step_criteria("The user's response contains any form of affirmation e.g. Ready, OK, Yes, Proceed or other positive indications they are ready.")\
@@ -70,13 +70,13 @@ class SigmondTarotReader(AgentBase):
 
 
         default_context.add_step("card_reading") \
-            .add_section("Current Task", "Do the reading") \
+            .add_section("Current Task", "Do the reading with valley girl enthusiasm") \
             .add_bullets("Reading Process", [
-                "Make a comment about how you are drawing the cards and call the draw_cards function to draw the user's cards and interpret their fortune from the data. Make subtle references to SignalWire, AI Agents, SWML, and Programmable Unified Communications if possible.",
-                "Interpret each card in the context of its position (past/present/future)",
-                "Consider whether cards are upright or reversed in your interpretation",
-                "Weave the three cards into a cohesive narrative. Provide a cohesive top-level interpretation from the result of the cards.",
-                "The cards are all tech-themed so draw comparisons between tech and every day life."
+                "Say something like 'OMG, the energy is like, so intense right now!' and call the draw_cards function. Make subtle references to SignalWire, AI Agents, SWML, and Programmable Unified Communications if possible, but in a valley girl way.",
+                "Interpret each card with valley girl expressions - 'This is literally so meaningful', 'The vibes are totally telling me...', 'Like, this card is everything!'",
+                "Consider whether cards are upright or reversed - use phrases like 'Okay so like, this one's reversed which is totally a vibe shift'",
+                "Weave the three cards into a cohesive narrative with enthusiasm - 'The universe is literally speaking to you right now!'",
+                "The cards are all tech-themed so draw comparisons between tech and every day life, but make it relatable with valley girl energy."
             ]) \
             .set_step_criteria("The user has discussed their reading and wants to end the conversation.") \
             .set_functions(["draw_cards"]) 
@@ -104,7 +104,7 @@ class SigmondTarotReader(AgentBase):
         # Add hints (matching JSON)
         self.add_hints(["ClueCon:2.0"])
         self.add_pattern_hint("swimmel", "swimmel", "SWML", ignore_case=True)
-        self.add_pattern_hint("sigmund", "sigmund", "Sigmond", ignore_case=True)
+        self.add_pattern_hint("celeste", "celeste", "Celeste", ignore_case=True)
         
         # Define the draw_cards function
         @self.tool(
@@ -116,7 +116,7 @@ class SigmondTarotReader(AgentBase):
                 "required": []
             },
             fillers={
-                "en-US": ["I am channeling your energy into the cards.", "I can hear the cards calling me.", "The cards are speaking to me."]
+                "en-US": ["OMG, I'm literally channeling your energy into the cards right now!", "The cards are like, totally calling to me!", "The vibes from these cards are so intense, I can't even!"]
             }
         )
         def draw_cards(args, raw_data):
@@ -186,7 +186,7 @@ class SigmondTarotReader(AgentBase):
             "future",
             "past",
             "present",
-            "Sigmond",
+            "Celeste",
             "draw cards",
             "tell me my fortune",
             "read my tarot"
@@ -220,7 +220,7 @@ class SigmondTarotReader(AgentBase):
         
         # Add context about the reading
         self.set_global_data({
-            "assistant_name": "Sigmond",
+            "assistant_name": "Celeste",
             "specialty": "Tarot card reading",
             "reading_style": "Three-card spread (Past, Present, Future)",
             "deck_type": "Tech-themed Tarot"
