@@ -397,16 +397,16 @@ Example usage:
                 return FileResponse(str(music_path), media_type="audio/mpeg")
             return {"error": "bgmusic.mp3 not found"}
         
-        @app.get("/sigmond_tarot_idle.mp4")
+        @app.get("/arcana_tarot_idle.mp4")
         async def serve_idle_video():
-            video_path = web_dir / "sigmond_tarot_idle.mp4"
+            video_path = web_dir / "arcana_tarot_idle.mp4"
             if video_path.exists():
                 return FileResponse(str(video_path), media_type="video/mp4")
             return {"error": "Video not found"}
         
-        @app.get("/sigmond_tarot_talking.mp4")
+        @app.get("/arcana_tarot_talking.mp4")
         async def serve_talking_video():
-            video_path = web_dir / "sigmond_tarot_talking.mp4"
+            video_path = web_dir / "arcana_tarot_talking.mp4"
             if video_path.exists():
                 return FileResponse(str(video_path), media_type="video/mp4")
             return {"error": "Video not found"}
