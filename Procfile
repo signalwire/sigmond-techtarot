@@ -1,1 +1,1 @@
-web: python bot/sigmond_tarot_steps.py --port ${PORT:-5000}
+web: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --worker-class uvicorn.workers.UvicornWorker

@@ -1,6 +1,8 @@
-# SignalWire Tarot Reading Application
+# SignalWire TechTarot
 
 A mystical tarot reading application featuring Sigmond, an AI-powered tarot reader that provides three-card readings (Past, Present, Future) using a tech-themed tarot deck.
+
+**Live demo:** https://techtarot.signalwire.me/
 
 ## Overview
 
@@ -12,135 +14,101 @@ This application combines SignalWire's AI Agent technology with WebRTC video cal
 - **Three-Card Spread**: Traditional Past, Present, Future reading format
 - **Tech-Themed Tarot Deck**: Custom deck featuring programming and technology concepts
 - **Interactive Web Interface**: Real-time card display with flip animations
-- **Video Call Integration**: Face-to-face readings via SignalWire WebRTC
+- **Video Call Integration**: Face-to-face readings via SignalWire WebRTC (the agent has vision enabled and greets you based on what it sees)
+- **Zero-Config Auth**: Guest tokens are minted server-side via `/get_token` — no credentials in the frontend
 - **Mute Controls**: Option to start muted or toggle mute during the call
 - **Event Logging**: Optional debug log for monitoring call events
 
 ## Project Structure
 
 ```
-tarot/
-├── bot/                        # Bot implementation
-│   ├── sigmond_tarot_steps.py # Main AI agent
-│   ├── bot.sh                  # Control script for starting/stopping
-│   └── signalwire_ai_knowledge_prompt.md # SignalWire knowledge base
-├── web/                        # Web interface and media files
-│   ├── client/                 # Frontend application
-│   │   ├── index.html          # Main UI
-│   │   ├── app.js              # JavaScript logic
-│   │   └── signalwire.js       # SignalWire SDK
-│   ├── card_images/            # Tarot card images
-│   │   ├── Major/              # Major Arcana cards
-│   │   ├── CloudDevelopers/
-│   │   ├── Docker/
-│   │   ├── FreeSWITCHDevs/
-│   │   ├── Linux/
-│   │   └── tarot_back.jpg      # Card back design
-│   ├── tarot_deck.json         # Card definitions and meanings
-│   ├── sigmond_tarot_idle.mp4  # Dealer idle video
-│   ├── sigmond_tarot_talking.mp4 # Dealer talking video
-│   └── bgmusic.mp3             # Background music
-└── README.md                   # This file
+techtarot/
+├── app.py                              # AI agent + web server (single entry point)
+├── signalwire_ai_knowledge_prompt.md   # SignalWire knowledge base for the agent
+├── Procfile                            # Production start command (gunicorn)
+├── requirements.txt / runtime.txt      # Python dependencies and version
+├── app.json / CHECKS / .dokku/         # Dokku deployment configuration
+├── .github/workflows/                  # Deploy + preview workflows (dokku-deploy-system)
+├── scripts/                            # Deck generation tooling (not served)
+└── web/                                # Public static root
+    ├── index.html                      # Main UI
+    ├── app.js                          # Frontend logic (@signalwire/js v4)
+    ├── signalwire.js                   # SignalWire browser SDK build
+    ├── card_images/                    # Tarot card images (Major, CloudDevelopers,
+    │                                   #   Docker, FreeSWITCHDevs, Linux)
+    ├── tarot_deck.json                 # Card definitions and meanings
+    ├── sigmond_tarot_idle.mp4          # Dealer idle video
+    ├── sigmond_tarot_talking.mp4       # Dealer talking video
+    └── bgmusic.mp3                     # Background music
 ```
-
-## Setup
-
-### Environment Variables
-
-**Required**:
-- `TAROT_WEB_ROOT`: URL where tarot media files are hosted (e.g., `https://your-domain.com/path/to/tarot`)
-
-**Optional**:
-- `TAROT_POST_PROMPT_URL`: URL for post-prompt webhook (if you want conversation summaries)
-- `SWML_DEV_USERNAME`: Basic auth username (defaults to auto-generated)
-- `SWML_DEV_PASSWORD`: Basic auth password (defaults to auto-generated)
-
-### Running with HTTPS
-
-To run the bot with HTTPS enabled, set the following environment variables:
-
-```bash
-export SWML_SSL_ENABLED=true
-export SWML_SSL_CERT_PATH=/path/to/cert.pem
-export SWML_SSL_KEY_PATH=/path/to/key.pem
-export SWML_DOMAIN=yourdomain.com
-```
-
-The SignalWire Agents SDK provides comprehensive security features including:
-- SSL/TLS encryption
-- Basic authentication (enabled by default)
-- HSTS headers
-- CORS configuration
-- Rate limiting
-- Request size limits
-
-For complete security configuration options, see the [SignalWire Python SDK documentation](https://github.com/signalwire/signalwire-python).
-
-### Bot Setup
-
-1. Navigate to the bot directory:
-   ```bash
-   cd bot
-   ```
-
-2. Install dependencies:
-   ```bash
-   pip install signalwire-sdk
-   ```
-
-3. Set required environment variable:
-   ```bash
-   export TAROT_WEB_ROOT="https://your-domain.com/path/to/tarot"
-   ```
-
-4. Run Sigmond using the control script:
-   ```bash
-   ./bot.sh start    # Start Sigmond on default port
-   ./bot.sh restart  # Restart Sigmond
-   ./bot.sh status   # Check if Sigmond is running
-   ./bot.sh logs     # View logs
-   ./bot.sh stop     # Stop Sigmond
-   ```
-
-   Or run directly:
-   ```bash
-   # HTTP mode (default)
-   python sigmond_tarot_steps.py --port 3000
-   
-   # HTTPS mode
-   export SWML_SSL_ENABLED=true
-   export SWML_SSL_CERT_PATH=/path/to/cert.pem
-   export SWML_SSL_KEY_PATH=/path/to/key.pem
-   export SWML_DOMAIN=yourdomain.com
-   python sigmond_tarot_steps.py --port 3000
-   ```
-
-### Web Interface Setup
-
-1. Update the SignalWire token in `web/client/app.js`:
-   ```javascript
-   const STATIC_TOKEN = 'YOUR_SIGNALWIRE_TOKEN_HERE';
-   ```
-
-2. Serve the web directory using any web server:
-   ```bash
-   cd web
-   python -m http.server 8080
-   ```
-
-3. Access the application at `http://localhost:8080/client/`
 
 ## How It Works
 
-1. **User Connection**: Users click "Connect to Sigmond" to initiate a video call
-2. **Introduction**: Sigmond introduces himself and explains the reading process
-3. **Card Drawing**: When ready, Sigmond draws three cards using the `draw_cards` function
-4. **Visual Display**: Cards appear on screen with dealing animations
-5. **Interpretation**: Sigmond interprets each card considering:
-   - Card position (Past/Present/Future)
-   - Upright or reversed orientation
-   - Tech-themed symbolism
-6. **Interactive Elements**: Users can click cards to flip them back and forth
+1. **User Connection**: Users click "Connect" — the frontend fetches a guest token and destination from `/get_token`, then dials the agent over WebRTC
+2. **Agent Registration**: On startup, the app auto-registers an External SWML Handler named `$AGENT_NAME` with SignalWire, pointing at the app's `/swml` endpoint
+3. **Introduction**: Sigmond takes a look at the seeker (vision), introduces himself, and explains the reading process
+4. **Card Drawing**: When ready, Sigmond draws three cards using the `draw_cards` SWAIG function
+5. **Visual Display**: Cards appear on screen with dealing animations, driven by SWML user events
+6. **Interpretation**: Sigmond interprets each card considering its position (Past/Present/Future), upright or reversed orientation, and tech-themed symbolism
+
+## Local Development
+
+1. Install dependencies:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+2. Configure credentials:
+   ```bash
+   cp .env.example .env
+   # Fill in SIGNALWIRE_SPACE_NAME, SIGNALWIRE_PROJECT_ID, SIGNALWIRE_TOKEN
+   ```
+
+3. For a full end-to-end call, SignalWire must be able to reach your machine — set `SWML_PROXY_URL_BASE` in `.env` to a public tunnel URL (e.g., ngrok):
+   ```bash
+   ngrok http 5000
+   # SWML_PROXY_URL_BASE=https://xxxx.ngrok.io
+   ```
+
+4. Run the app:
+   ```bash
+   python app.py
+   ```
+
+5. Open http://localhost:5000/ and click Connect.
+
+### Endpoints
+
+| Path | Purpose |
+|---|---|
+| `/` | Web client (static files from `web/`) |
+| `/get_token` | Mints a scoped guest token + destination address for the frontend |
+| `/swml` | SWML endpoint the agent serves (basic auth) |
+| `/health`, `/ready` | Health checks for deployment |
+
+## Environment Variables
+
+| Variable | Required | Description |
+|---|---|---|
+| `SIGNALWIRE_SPACE_NAME` | Yes | Your SignalWire space (`myspace` or `myspace.signalwire.com`) |
+| `SIGNALWIRE_PROJECT_ID` | Yes | SignalWire project ID |
+| `SIGNALWIRE_TOKEN` | Yes | SignalWire API token |
+| `SWML_PROXY_URL_BASE` | Local only | Public URL base for SWML callbacks; in production `APP_URL` is set automatically by Dokku |
+| `SWML_BASIC_AUTH_USER` / `SWML_BASIC_AUTH_PASSWORD` | Recommended in prod | Basic auth for the SWML endpoint (auto-generated per process if unset) |
+| `AGENT_NAME` | No | SWML handler resource name (default `techtarot`; set automatically on Dokku) |
+| `PORT` | No | Server port (default 5000) |
+| `POST_PROMPT_URL` | No | Webhook to receive conversation summaries |
+
+## Deployment
+
+This repo deploys via the [signalwire-demos dokku-deploy-system](https://github.com/signalwire-demos/dokku-deploy-system) reusable workflows:
+
+- Push to `main` → production at `https://techtarot.signalwire.me`
+- Pull requests → preview apps at `https://techtarot-pr-<n>.signalwire.me`
+
+App-specific configuration (the `SIGNALWIRE_*` variables above) lives in the repo's GitHub Environment variables; infrastructure secrets are provided at the org level. See the deploy-system docs for details.
 
 ## Tarot Deck
 
@@ -154,42 +122,15 @@ The tech-themed tarot deck includes:
 
 Each card includes upright and reversed meanings tailored to technology themes.
 
-## Configuration
-
-- **Bot Port**: Configure with `--port` flag (default: 3000)
-- **SignalWire Token**: Update `STATIC_TOKEN` in app.js
-- **Destination**: Update `DESTINATION` in app.js for SignalWire routing
-- **Card Images**: Uses relative paths (../card_images from client directory)
-
-## Features in Detail
-
-### Mute Functionality
-- Checkbox to start calls muted
-- Toggle mute button during calls
-- Uses native WebRTC audio track control
-
-### Event Logging
-- Optional debug log checkbox
-- Shows SignalWire events and user interactions
-- Collapsible interface
-
-### Card Display
-- Automatic card flipping after dealing
-- Click cards to toggle between front and back
-- Reversed cards display upside-down
-- Smooth animations and transitions
-
 ## Technical Details
 
-- **SignalWire SDK**: Uses Fabric API for WebRTC connections
-- **AI Agent**: Python-based using SignalWire Agents framework
+- **AI Agent**: Python, built on the [SignalWire SDK](https://github.com/signalwire/signalwire-python) (`signalwire-sdk`) AgentBase/AgentServer
+- **Frontend**: Vanilla JavaScript with the `@signalwire/js` v4 browser SDK
 - **Voice**: ElevenLabs Adam voice for natural speech
-- **SWML**: SignalWire Markup Language for user events
-- **Frontend**: Vanilla JavaScript with responsive CSS
+- **SWML**: SignalWire Markup Language user events drive the card UI
 
 ## Learning Resources
 
-For more information on SignalWire technologies:
 - [SignalWire Python SDK (GitHub)](https://github.com/signalwire/signalwire-python) - Unified Python SDK for building AI agents
 - [SignalWire AI Documentation](https://developer.signalwire.com/ai/) - AI Agent guides and tutorials
 - [SWML Documentation](https://developer.signalwire.com/swml/) - SignalWire Markup Language reference

@@ -1,10 +1,10 @@
 // Configuration
-const DESTINATION = '/public/sigmond-techtarot';
-// REPLACE THIS WITH YOUR ACTUAL SIGNALWIRE TOKEN
-const STATIC_TOKEN = 'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIiwidHlwIjoiU0FUIiwiY2giOiJwdWMuc2lnbmFsd2lyZS5jb20ifQ..htbs9CftJWJDV5rN.bq37URPcSrpOBSVRczp8QB5Yb84AkDNH4cr1O_U8kIstLT4uJ7BCPaVpE4_qqqviMt7s2owuRRNO9Tx28uXKo7I8i2Df0s5fZm9WrZkgthSwacq8V-9_mPyUMi1Yiha675aZuL2TFot0NrIaiZEt1IEsdEJFtw1SWBie63vUajwMDrY2GU9wN2BozQ6dT_fHUNbNBCbX4lgLaz2lvT0wZ2gf8S0GTCcr799r75h4GY-masEg2-a8CB937Z7UXh1MQhmTbycUQO9v_PSmeRSYL5acz5SMSoMdUd2M4P4QVK3Csyfvd0xJJQkl9tBEenhlI8ipcGsl_YDzvgS6MkLa3FB2NzY8einjHNZ2xYcelifxbC4yzDxHHmjMPmmSuH20zSg7r6VR8IEtVcr0I9Sp6BhKyxoYcivH9IIVhZwF7d618XJE8lWInszxfXBTn_j0zN8Zomgzo7S6-3Ne-_nhvxnIywsoX3Y4tlUx0yrQIljpEsXb2frqryqiv7v94sxqQSHC4UjeG_EgQ5YoUj9yVIgXvZt8J7_5CTL7Pg2jtsytjJecLOLqYdIWupEtkNdE-fhANQMweoamjcXmboeL50AzTYFq.yKhygR6oYAam-9Pe44RSBw';
-const BASE_URL = '..';
+const BASE_URL = '.';
 
 let client;
+// Current token and destination (fetched dynamically from /get_token)
+let currentToken = null;
+let currentDestination = null;
 let call;
 let cardsRevealed = false;
 let isMuted = false;
@@ -196,6 +196,24 @@ function onConnected() {
 
 // --- Connection (v4) ----------------------------------------------------
 
+// Fetch a guest token (+ destination address) from the backend.
+// Throws with a useful message on any error shape, including the legacy
+// FastAPI tuple bug (an array body returned with HTTP 200).
+async function fetchGuestToken() {
+    const resp = await fetch('/get_token');
+    let data = await resp.json();
+    if (Array.isArray(data)) {
+        data = data[0] || {};
+    }
+    if (!resp.ok || data.error) {
+        throw new Error(data.error || `Token request failed (HTTP ${resp.status})`);
+    }
+    if (!data.token || !data.address) {
+        throw new Error('Token response missing token/address');
+    }
+    return data;
+}
+
 async function connectToCall() {
     try {
         // Disable button and show connecting state
@@ -212,24 +230,38 @@ async function connectToCall() {
         currentLocalStream = null;
         logEvent('Starting new connection...');
 
-        if (!STATIC_TOKEN || STATIC_TOKEN === 'YOUR_SIGNALWIRE_TOKEN_HERE') {
-            throw new Error('Please update STATIC_TOKEN with your actual SignalWire token');
-        }
-
         // UMD global is window.SignalWire
         const SignalWireSDK = window.SignalWire || SignalWire;
         if (!SignalWireSDK || typeof SignalWireSDK.SignalWire !== 'function') {
             throw new Error('SignalWire v4 SDK not loaded');
         }
 
-        statusDiv.textContent = 'Initializing client...';
-        logEvent('Using static token', { tokenLength: STATIC_TOKEN.length });
+        // Fetch the first token up front so a backend problem fails fast
+        // (and gives us the destination address to dial)
+        statusDiv.textContent = 'Getting token...';
+        const tokenData = await fetchGuestToken();
+        currentToken = tokenData.token;
+        currentDestination = tokenData.address;
+        logEvent('Token received', { destination: currentDestination });
 
-        // v4: constructor auto-connects; class, not factory. A guest SAT works as
-        // a plain bearer via StaticCredentialProvider.
-        client = new SignalWireSDK.SignalWire(
-            new SignalWireSDK.StaticCredentialProvider({ token: STATIC_TOKEN })
-        );
+        statusDiv.textContent = 'Initializing client...';
+
+        // v4: constructor auto-connects; class, not factory. The SDK calls
+        // authenticate() whenever it needs a (fresh) token - hand it the
+        // token we already fetched first, then mint new ones on demand.
+        let usedInitialToken = false;
+        client = new SignalWireSDK.SignalWire({
+            authenticate: async () => {
+                if (!usedInitialToken) {
+                    usedInitialToken = true;
+                    return { token: currentToken };
+                }
+                // SDK wants a fresh token (expiry/reconnect) - mint another
+                const data = await fetchGuestToken();
+                currentToken = data.token;
+                return { token: data.token };
+            }
+        });
 
         // v4: surface SDK errors/warnings (replaces logLevel: 'debug')
         track(client.errors$.subscribe(e =>
@@ -245,18 +277,18 @@ async function connectToCall() {
         // video: true  -> send the seeker's camera (the agent has vision enabled and
         //                 comments on the seeker's appearance via get_visual_input)
         // receiveVideo  -> receive Sigmond's avatar video
-        call = await client.dial(DESTINATION, {
+        call = await client.dial(currentDestination, {
             audio: true,
             video: true,
             receiveAudio: true,
             receiveVideo: true,
             userVariables: {
                 userName: 'Tarot Reader',
-                interface: 'sw-js-v4-static',
+                interface: 'sw-js-v4-guest',
                 extension: 'sigmond_tarot'
             }
         });
-        logEvent('Dial initiated', { destination: DESTINATION });
+        logEvent('Dial initiated', { destination: currentDestination });
 
         // Remote avatar video + audio
         track(call.remoteStream$.subscribe(stream => attachRemoteStream(stream)));

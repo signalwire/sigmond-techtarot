@@ -1,107 +1,63 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# .gitignore
+# Dokku App Configuration
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Configuration for your Dokku app deployment.
+# These settings are applied during the deployment workflow.
+#
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Environment & Secrets
+# Resource Limits
 # ─────────────────────────────────────────────────────────────────────────────
-.env
-.env.*
-!.env.example
-*.pem
-*.key
-secrets/
-credentials.json
+# Memory: 256m, 512m, 1g, 2g, etc.
+# CPU: Number of cores (can be fractional, e.g., 0.5)
+resources:
+  memory: 512m
+  cpu: 1
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Python
+# Health Check
 # ─────────────────────────────────────────────────────────────────────────────
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-venv/
-.venv/
-ENV/
-env/
-.pytest_cache/
-.coverage
-htmlcov/
-.mypy_cache/
-.ruff_cache/
+# Path that returns 200 OK when app is healthy
+healthcheck:
+  path: /health
+  timeout: 30
+  attempts: 5
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Node.js
+# Scaling
 # ─────────────────────────────────────────────────────────────────────────────
-node_modules/
-npm-debug.log
-yarn-error.log
-.npm
-.yarn-integrity
+# Number of web workers (dynos)
+scale:
+  web: 1
+  # worker: 1  # Uncomment for background workers
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Ruby
+# Custom Domains
 # ─────────────────────────────────────────────────────────────────────────────
-.bundle/
-vendor/bundle
-*.gem
-Gemfile.lock
+# Additional domains for this app (requires DNS configuration)
+# custom_domains:
+#   - www.example.com
+#   - api.example.com
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Go
+# Environment-Specific Overrides
 # ─────────────────────────────────────────────────────────────────────────────
-bin/
-*.exe
-*.test
-*.out
+environments:
+  production:
+    resources:
+      memory: 1g
+      cpu: 2
+    scale:
+      web: 2
 
-# ─────────────────────────────────────────────────────────────────────────────
-# IDE & Editors
-# ─────────────────────────────────────────────────────────────────────────────
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-.DS_Store
-Thumbs.db
+  staging:
+    resources:
+      memory: 512m
+      cpu: 1
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Logs & Temp
-# ─────────────────────────────────────────────────────────────────────────────
-*.log
-logs/
-tmp/
-temp/
-.cache/
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Build Output
-# ─────────────────────────────────────────────────────────────────────────────
-build/
-dist/
-out/
-.next/
-.nuxt/
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Testing
-# ─────────────────────────────────────────────────────────────────────────────
-coverage/
-.nyc_output/
+  preview:
+    resources:
+      memory: 256m
+      cpu: 0.5
